@@ -58,6 +58,21 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+// joint 1-3 in can1
+FDCAN_TxHeaderTypeDef joint_1;
+FDCAN_TxHeaderTypeDef joint_2;
+FDCAN_TxHeaderTypeDef joint_3;
+// joint 4-6 in can2
+FDCAN_TxHeaderTypeDef joint_4;
+FDCAN_TxHeaderTypeDef joint_5;
+FDCAN_TxHeaderTypeDef joint_6;
+
+uint8_t tx_msg_buffer[8];
+
+FDCAN_RxHeaderTypeDef rx_header;
+uint8_t rx_data[8];
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,6 +92,15 @@ void delay_us(uint16_t us)
 {
 	__HAL_TIM_SET_COUNTER(&htim4, 0); 
 	while (__HAL_TIM_GET_COUNTER(&htim4) < us) ;
+}
+
+void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
+{
+	//TODO 
+	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_8)
+	{
+	}
+	
 }
 
 /* USER CODE END PFP */
@@ -124,7 +148,75 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM5_Init();
   MX_USART2_UART_Init();
-  /* USER CODE BEGIN 2 */
+  /* USER CODE BEGIN 2 */ 
+	
+	//1. init tx msg
+	joint_1.Identifier = 0x1;
+	joint_1.IdType = FDCAN_STANDARD_ID;
+	joint_1.TxFrameType = FDCAN_DATA_FRAME;
+	joint_1.DataLength = FDCAN_DLC_BYTES_8;
+	joint_1.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_1.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_1.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_1.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_1.MessageMarker = 0;
+	
+	joint_2.Identifier = 0x2;
+	joint_2.IdType = FDCAN_STANDARD_ID;
+	joint_2.TxFrameType = FDCAN_DATA_FRAME;
+	joint_2.DataLength = FDCAN_DLC_BYTES_8;
+	joint_2.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_2.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_2.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_2.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_2.MessageMarker = 0;
+	
+	joint_3.Identifier = 0x3;
+	joint_3.IdType = FDCAN_STANDARD_ID;
+	joint_3.TxFrameType = FDCAN_DATA_FRAME;
+	joint_3.DataLength = FDCAN_DLC_BYTES_8;
+	joint_3.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_3.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_3.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_3.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_3.MessageMarker = 0;
+	
+	joint_4.Identifier = 0x4;
+	joint_4.IdType = FDCAN_STANDARD_ID;
+	joint_4.TxFrameType = FDCAN_DATA_FRAME;
+	joint_4.DataLength = FDCAN_DLC_BYTES_8;
+	joint_4.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_4.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_4.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_4.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_4.MessageMarker = 0;
+	
+	joint_5.Identifier = 0x5;
+	joint_5.IdType = FDCAN_STANDARD_ID;
+	joint_5.TxFrameType = FDCAN_DATA_FRAME;
+	joint_5.DataLength = FDCAN_DLC_BYTES_8;
+	joint_5.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_5.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_5.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_5.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_5.MessageMarker = 0;
+	
+	joint_6.Identifier = 0x6;
+	joint_6.IdType = FDCAN_STANDARD_ID;
+	joint_6.TxFrameType = FDCAN_DATA_FRAME;
+	joint_6.DataLength = FDCAN_DLC_BYTES_8;
+	joint_6.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_6.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_6.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_6.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_6.MessageMarker = 0;
+	
+	HAL_FDCAN_Start(&hfdcan1);
+	HAL_FDCAN_Start(&hfdcan2);
+	
+	HAL_Delay(10);
+	HAL_TIM_Base_Start(&htim2);
+	HAL_TIM_Base_Start(&htim4);
 	
 	HAL_Delay(10);
 
@@ -137,9 +229,11 @@ int main(void)
 	
 	init9252(&ethercat_slave);
 	
-	HAL_Delay(10);
+	HAL_Delay(100);
 	
 	HAL_TIM_Base_Start_IT(&htim5);
+	
+	HAL_Delay(100);
 
   /* USER CODE END 2 */
 
@@ -150,6 +244,15 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  if (HAL_FDCAN_GetRxMessage(&hfdcan1, FDCAN_RX_FIFO0, &rx_header, rx_data) == HAL_OK)
+	  {
+		  unpack_reply(&rx_header, rx_data);
+	  }
+	  if (HAL_FDCAN_GetRxMessage(&hfdcan2, FDCAN_RX_FIFO0, &rx_header, rx_data) == HAL_OK)
+	  {
+		  unpack_reply(&rx_header, rx_data);
+	  }
+	  delay_us(10);
   }
   /* USER CODE END 3 */
 }
