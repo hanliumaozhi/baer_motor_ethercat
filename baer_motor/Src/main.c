@@ -72,6 +72,13 @@ uint8_t tx_msg_buffer[8];
 FDCAN_RxHeaderTypeDef rx_header;
 uint8_t rx_data[8];
 
+union Byte8
+{
+	uint64_t udata;
+	uint8_t buffer[8];
+};
+
+union Byte8 byte8;
 
 /* USER CODE END PV */
 
@@ -231,7 +238,7 @@ int main(void)
 	
 	HAL_Delay(100);
 	
-	HAL_TIM_Base_Start_IT(&htim5);
+	//HAL_TIM_Base_Start_IT(&htim5);
 	
 	HAL_Delay(100);
 
@@ -244,7 +251,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if (HAL_FDCAN_GetRxMessage(&hfdcan1, FDCAN_RX_FIFO0, &rx_header, rx_data) == HAL_OK)
+	  /*if (HAL_FDCAN_GetRxMessage(&hfdcan1, FDCAN_RX_FIFO0, &rx_header, rx_data) == HAL_OK)
 	  {
 		  unpack_reply(&rx_header, rx_data);
 	  }
@@ -252,7 +259,12 @@ int main(void)
 	  {
 		  unpack_reply(&rx_header, rx_data);
 	  }
-	  delay_us(10);
+	  delay_us(10);*/
+	  HAL_Delay(2);
+	  uint64_t motor_1 = BufferOut.Cust.motor_1;
+	  byte8.udata = motor_1;
+	  BufferIn.Cust.motor_1 = byte8.buffer[0];
+	  main_task(&ethercat_slave);
   }
   /* USER CODE END 3 */
 }
