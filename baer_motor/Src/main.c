@@ -72,6 +72,9 @@ uint8_t tx_msg_buffer[8];
 FDCAN_RxHeaderTypeDef rx_header;
 uint8_t rx_data[8];
 
+// for ethercat var
+uint64_t hs_ = 0;
+
 
 /* USER CODE END PV */
 
@@ -100,6 +103,11 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_8)
 	{
 	}
+	
+}
+
+void can_write(FDCAN_TxHeaderTypeDef* joint, uint8_t* tx_data, int can_no)
+{
 	
 }
 
@@ -338,12 +346,12 @@ static void MX_FDCAN1_Init(void)
   hfdcan1.Init.ProtocolException = DISABLE;
   hfdcan1.Init.NominalPrescaler = 8;
   hfdcan1.Init.NominalSyncJumpWidth = 1;
-  hfdcan1.Init.NominalTimeSeg1 = 12;
-  hfdcan1.Init.NominalTimeSeg2 = 2;
+  hfdcan1.Init.NominalTimeSeg1 = 10;
+  hfdcan1.Init.NominalTimeSeg2 = 4;
   hfdcan1.Init.DataPrescaler = 8;
   hfdcan1.Init.DataSyncJumpWidth = 1;
-  hfdcan1.Init.DataTimeSeg1 = 12;
-  hfdcan1.Init.DataTimeSeg2 = 2;
+  hfdcan1.Init.DataTimeSeg1 = 10;
+  hfdcan1.Init.DataTimeSeg2 = 4;
   hfdcan1.Init.MessageRAMOffset = 0;
   hfdcan1.Init.StdFiltersNbr = 0;
   hfdcan1.Init.ExtFiltersNbr = 0;
@@ -391,12 +399,12 @@ static void MX_FDCAN2_Init(void)
   hfdcan2.Init.ProtocolException = DISABLE;
   hfdcan2.Init.NominalPrescaler = 8;
   hfdcan2.Init.NominalSyncJumpWidth = 1;
-  hfdcan2.Init.NominalTimeSeg1 = 12;
-  hfdcan2.Init.NominalTimeSeg2 = 2;
+  hfdcan2.Init.NominalTimeSeg1 = 10;
+  hfdcan2.Init.NominalTimeSeg2 = 4;
   hfdcan2.Init.DataPrescaler = 8;
   hfdcan2.Init.DataSyncJumpWidth = 1;
-  hfdcan2.Init.DataTimeSeg1 = 12;
-  hfdcan2.Init.DataTimeSeg2 = 2;
+  hfdcan2.Init.DataTimeSeg1 = 10;
+  hfdcan2.Init.DataTimeSeg2 = 4;
   hfdcan2.Init.MessageRAMOffset = 1024;
   hfdcan2.Init.StdFiltersNbr = 0;
   hfdcan2.Init.ExtFiltersNbr = 0;
@@ -681,6 +689,11 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+uint32_t can1_error_counter = 0;
+uint32_t can2_error_counter = 0;
+uint32_t can1_last_error_code = 0;
+uint32_t can2_last_error_code = 0;
+
 void control()
 {
 	
@@ -689,11 +702,65 @@ void pack_ethercat_data()
 {
 	
 }
+
+void pack_cmd(FDCAN_TxHeaderTypeDef* joint, uint8_t* tx_data, int16_t cmd_data)
+{
+	
+}
+
+void pack_all()
+{
+	
+}
+
+void write_all()
+{
+}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM5)
 	{
 		
+		pack_ethercat_data();
+		main_task(&ethercat_slave);
+		
+		uint64_t tmp_hs_ = BufferOut.Cust.hs;
+		
+		// 1. control
+		if (tmp_hs_ > hs_ || tmp_hs_ == 1)
+		{
+			control();
+			pack_all();
+			write_all();
+		}
+		
+		
+		// error check
+		can1_last_error_code = READ_REG(hfdcan1.Instance->PSR);	
+		can1_last_error_code = can1_last_error_code & 0x0007;
+		
+		can2_last_error_code = READ_REG(hfdcan2.Instance->PSR);	
+		can2_last_error_code = can2_last_error_code & 0x0007;
+		
+		FDCAN_ErrorCountersTypeDef ErrorCounters;
+		uint8_t error_counter1;
+		uint8_t error_counter2;
+		uint8_t error_counter3;
+		uint8_t error_counter4;
+		HAL_FDCAN_GetErrorCounters(&hfdcan1, &ErrorCounters);
+		error_counter1 = (uint8_t)ErrorCounters.RxErrorCnt;
+		error_counter2 = (uint8_t)ErrorCounters.TxErrorCnt; 
+		
+		can1_error_counter += error_counter1;
+		can1_error_counter += error_counter2;
+		
+		HAL_FDCAN_GetErrorCounters(&hfdcan2, &ErrorCounters);
+		error_counter3 = (uint8_t)ErrorCounters.RxErrorCnt;
+		error_counter4 = (uint8_t)ErrorCounters.TxErrorCnt;
+		
+		can2_error_counter += error_counter3;
+		can2_error_counter += error_counter4;
 	}
 }
 
