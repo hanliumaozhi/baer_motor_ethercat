@@ -69,6 +69,13 @@ FDCAN_TxHeaderTypeDef joint_6;
 
 uint8_t tx_msg_buffer[8];
 
+uint8_t joint_1_data[8];
+uint8_t joint_2_data[8];
+uint8_t joint_3_data[8];
+uint8_t joint_4_data[8];
+uint8_t joint_5_data[8];
+uint8_t joint_6_data[8];
+
 FDCAN_RxHeaderTypeDef rx_header;
 uint8_t rx_data[8];
 
@@ -115,6 +122,44 @@ void can_write(FDCAN_TxHeaderTypeDef* joint, uint8_t* tx_data, int can_no)
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void motor_enable(FDCAN_TxHeaderTypeDef* joint_tx, uint8_t* data_buffer)
+{
+	joint_tx->DataLength = FDCAN_DLC_BYTES_8;
+	data_buffer[0] = 0xff;
+	data_buffer[1] = 0xff;
+	data_buffer[2] = 0xff;
+	data_buffer[3] = 0xff;
+	data_buffer[4] = 0xff;
+	data_buffer[5] = 0xff;
+	data_buffer[6] = 0xff;
+	data_buffer[7] = 0xfc;
+}
+
+void motor_zero(FDCAN_TxHeaderTypeDef* joint_tx, uint8_t* data_buffer)
+{
+	joint_tx->DataLength = FDCAN_DLC_BYTES_8;
+	data_buffer[0] = 0xff;
+	data_buffer[1] = 0xff;
+	data_buffer[2] = 0xff;
+	data_buffer[3] = 0xff;
+	data_buffer[4] = 0xff;
+	data_buffer[5] = 0xff;
+	data_buffer[6] = 0xff;
+	data_buffer[7] = 0xfe;
+}
+
+void motor_disable(FDCAN_TxHeaderTypeDef* joint_tx, uint8_t* data_buffer)
+{
+	joint_tx->DataLength = FDCAN_DLC_BYTES_8;
+	data_buffer[0] = 0xff;
+	data_buffer[1] = 0xff;
+	data_buffer[2] = 0xff;
+	data_buffer[3] = 0xff;
+	data_buffer[4] = 0xff;
+	data_buffer[5] = 0xff;
+	data_buffer[6] = 0xff;
+	data_buffer[7] = 0xfd;
+}
 
 /* USER CODE END 0 */
 
@@ -694,10 +739,24 @@ uint32_t can2_error_counter = 0;
 uint32_t can1_last_error_code = 0;
 uint32_t can2_last_error_code = 0;
 
+uint16_t control_word;
+
+int is_enable = 0;
+int motor_init_state = 0;
 void control()
 {
-	
+	if (control_word == 2 && is_enable == 1)
+	{
+		//safe torque off
+		
+	}
+	if (control_word == 1 && is_enable == 0)
+	{
+		//
+		motor_enable()
+	}
 }
+
 void pack_ethercat_data()
 {
 	
@@ -730,7 +789,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		// 1. control
 		if (tmp_hs_ > hs_ || tmp_hs_ == 1)
 		{
+			control_word = BufferOut.Cust.control_word;
+			
 			control();
+			
 			pack_all();
 			write_all();
 		}
