@@ -76,11 +76,23 @@ uint8_t joint_4_data[8];
 uint8_t joint_5_data[8];
 uint8_t joint_6_data[8];
 
+uint64_t joint_r_data[6];
+
 FDCAN_RxHeaderTypeDef rx_header;
 uint8_t rx_data[8];
 
 // for ethercat var
 uint64_t hs_ = 0;
+
+union Byte8
+{
+	uint64_t udata;
+	uint8_t buffer[8];
+};
+
+union Byte8 byte_8;
+union Byte8 byte_8_reply;
+uint64_t reply_hs[6];
 
 
 /* USER CODE END PV */
@@ -109,12 +121,18 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 	//TODO 
 	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_8)
 	{
+		int id = data[0];
+		if (id > 0 && id < 7)
+		{
+			for (size_t i = 0; i < 8; i++)
+			{
+				byte_8_reply.buffer[i] = data[i];
+			}
+			
+			joint_r_data[id] = byte_8_reply.udata;
+			reply_hs[id] = hs_;
+		}
 	}
-	
-}
-
-void can_write(FDCAN_TxHeaderTypeDef* joint, uint8_t* tx_data, int can_no)
-{
 	
 }
 
@@ -734,6 +752,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+
 uint32_t can1_error_counter = 0;
 uint32_t can2_error_counter = 0;
 uint32_t can1_last_error_code = 0;
@@ -743,37 +762,177 @@ uint16_t control_word;
 
 int is_enable = 0;
 int motor_init_state = 0;
+
+void send_to_all_slave()
+{
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_1, joint_1_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
+	}
+		
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_2, joint_2_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
+	}
+		
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_3, joint_3_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
+	}
+		
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_4, joint_4_data) != HAL_OK)
+	{
+		can2_error_counter += 1;
+	}
+		
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_5, joint_5_data) != HAL_OK)
+	{
+		can2_error_counter += 1;
+	}
+		
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_6, joint_6_data) != HAL_OK)
+	{
+		can2_error_counter += 1;
+	}
+}
+
+void pack_motor_data()
+{
+	byte_8.udata = BufferOut.Cust.motor_1;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_1_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_2;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_2_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_3;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_3_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_4;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_4_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_5;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_5_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_6;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_6_data[i] = byte_8.buffer[i];
+	}
+}
+
 void control()
 {
+	int is_init = 0;
+	
 	if (control_word == 2 && is_enable == 1)
 	{
 		//safe torque off
+		//TODO:
+		motor_disable(&joint_1, joint_1_data);
+		motor_disable(&joint_2, joint_2_data);
+		motor_disable(&joint_3, joint_3_data);
+		motor_disable(&joint_4, joint_4_data);
+		motor_disable(&joint_5, joint_5_data);
+		motor_disable(&joint_6, joint_6_data);
+		
+		send_to_all_slave();
 		
 	}
 	if (control_word == 1 && is_enable == 0)
 	{
-		//
-		motor_enable()
+		// send enable cmd
+		motor_enable(&joint_1, joint_1_data);
+		motor_enable(&joint_2, joint_2_data);
+		motor_enable(&joint_3, joint_3_data);
+		motor_enable(&joint_4, joint_4_data);
+		motor_enable(&joint_5, joint_5_data);
+		motor_enable(&joint_6, joint_6_data);
+		
+		send_to_all_slave();
+		
+		is_enable = 1;
+		motor_init_state = 1;
+		is_init = 1;
 	}
+	if (is_init)
+	{
+		return;
+	}
+	
+	if (motor_init_state == 1)
+	{
+		motor_zero(&joint_1, joint_1_data);
+		motor_zero(&joint_2, joint_2_data);
+		motor_zero(&joint_3, joint_3_data);
+		motor_zero(&joint_4, joint_4_data);
+		motor_zero(&joint_5, joint_5_data);
+		motor_zero(&joint_6, joint_6_data);
+		send_to_all_slave();
+		motor_init_state = 0;
+	}
+	
+	if (control_word == 1 && is_enable)
+	{
+		pack_motor_data();
+		send_to_all_slave();
+	}
+}
+
+uint16_t get_motor_status()
+{
+	int motor_msg[6];
+	
+	uint16_t motor_status_ = 0;
+	
+	for (size_t i = 0; i < 6; i++)
+	{
+		if ((reply_hs[i] + 10) < hs_)
+		{
+			motor_msg[i] = 0;
+		}
+		else
+		{
+			motor_msg[i] = 1;
+			motor_status_ |= 1 << i;
+		}
+	}
+	return motor_status_;
 }
 
 void pack_ethercat_data()
 {
+	BufferIn.Cust.hs = hs_;
 	
-}
-
-void pack_cmd(FDCAN_TxHeaderTypeDef* joint, uint8_t* tx_data, int16_t cmd_data)
-{
+	BufferIn.Cust.motor_1 = joint_r_data[0];
+	BufferIn.Cust.motor_2 = joint_r_data[1];
+	BufferIn.Cust.motor_3 = joint_r_data[2];
+	BufferIn.Cust.motor_4 = joint_r_data[3];
+	BufferIn.Cust.motor_5 = joint_r_data[4];
+	BufferIn.Cust.motor_6 = joint_r_data[5];
 	
-}
-
-void pack_all()
-{
+	BufferIn.Cust.can1_error_log = can1_error_counter;
+	BufferIn.Cust.can2_error_log = can2_error_counter;
 	
-}
-
-void write_all()
-{
+	BufferIn.Cust.rec_error_can1 = (uint16_t)can1_last_error_code;
+	BufferIn.Cust.rec_error_can2 = (uint16_t)can2_last_error_code;
+	
+	//error protect
+	BufferIn.Cust.motor_status = get_motor_status();
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -793,8 +952,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			
 			control();
 			
-			pack_all();
-			write_all();
+			hs_ = tmp_hs_;
+			
 		}
 		
 		
