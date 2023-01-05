@@ -121,7 +121,7 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 	//TODO 
 	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_8)
 	{
-		int id = data[0];
+		int id = data[0] & 0xF;
 		if (id > 0 && id < 7)
 		{
 			for (size_t i = 0; i < 8; i++)
@@ -129,8 +129,8 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 				byte_8_reply.buffer[i] = data[i];
 			}
 			
-			joint_r_data[id] = byte_8_reply.udata;
-			reply_hs[id] = hs_;
+			joint_r_data[id-1] = byte_8_reply.udata;
+			reply_hs[id-1] = hs_;
 		}
 	}
 	
