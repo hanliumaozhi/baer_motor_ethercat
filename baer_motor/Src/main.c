@@ -950,6 +950,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			control_word = BufferOut.Cust.control_word;
 			
+			if (tmp_hs_ == 1)
+			{
+				is_enable = 0;
+			}
+			
 			control();
 			
 			hs_ = tmp_hs_;
