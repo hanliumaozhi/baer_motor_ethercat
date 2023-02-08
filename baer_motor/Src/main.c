@@ -143,6 +143,12 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 				byte_8_reply.buffer[i] = data[i];
 			}
 			
+			for (size_t i = 5; i < 8; i++)
+			{
+				byte_8_reply.buffer[i] = 0;
+			}
+			
+			
 			joint_r_data[id - 1] = byte_8_reply.udata;
 			reply_hs[id - 1] = hs_;
 		}
