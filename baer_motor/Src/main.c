@@ -129,8 +129,22 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 				byte_8_reply.buffer[i] = data[i];
 			}
 			
-			joint_r_data[id-1] = byte_8_reply.udata;
-			reply_hs[id-1] = hs_;
+			joint_r_data[id - 1] = byte_8_reply.udata;
+			reply_hs[id - 1] = hs_;
+		}
+	}
+	else if (pRxHeader->DataLength == FDCAN_DLC_BYTES_5)
+	{
+		int id = data[4];
+		if (id > 0 && id < 7)
+		{
+			for (size_t i = 0; i < 5; i++)
+			{
+				byte_8_reply.buffer[i] = data[i];
+			}
+			
+			joint_r_data[id - 1] = byte_8_reply.udata;
+			reply_hs[id - 1] = hs_;
 		}
 	}
 	
@@ -177,6 +191,19 @@ void motor_disable(FDCAN_TxHeaderTypeDef* joint_tx, uint8_t* data_buffer)
 	data_buffer[5] = 0xff;
 	data_buffer[6] = 0xff;
 	data_buffer[7] = 0xfd;
+}
+
+void motor_encoder_val(FDCAN_TxHeaderTypeDef* joint_tx, uint8_t* data_buffer, uint8_t joint_no)
+{
+	joint_tx->DataLength = FDCAN_DLC_BYTES_8;
+	data_buffer[0] = joint_no;
+	data_buffer[1] = 0xff;
+	data_buffer[2] = 0xff;
+	data_buffer[3] = 0xff;
+	data_buffer[4] = 0xff;
+	data_buffer[5] = 0xff;
+	data_buffer[6] = 0xff;
+	data_buffer[7] = 0xf8;
 }
 
 /* USER CODE END 0 */
@@ -838,6 +865,21 @@ void pack_motor_data()
 void control()
 {
 	int is_init = 0;
+	
+	
+	if (control_word == 3 && is_enable == 0)
+	{
+		// send enable cmd
+		motor_encoder_val(&joint_1, joint_1_data, 1);
+		motor_encoder_val(&joint_2, joint_2_data, 2);
+		motor_encoder_val(&joint_3, joint_3_data, 3);
+		motor_encoder_val(&joint_4, joint_4_data, 4);
+		motor_encoder_val(&joint_5, joint_5_data, 5);
+		motor_encoder_val(&joint_6, joint_6_data, 6);
+		
+		send_to_all_slave();
+		
+	}
 	
 	if (control_word == 2 && is_enable == 1)
 	{
