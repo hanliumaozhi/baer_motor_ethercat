@@ -67,6 +67,8 @@ FDCAN_TxHeaderTypeDef joint_4;
 FDCAN_TxHeaderTypeDef joint_5;
 FDCAN_TxHeaderTypeDef joint_6;
 
+FDCAN_TxHeaderTypeDef joint_encoder;
+
 uint8_t tx_msg_buffer[8];
 
 uint8_t joint_1_data[8];
@@ -75,6 +77,7 @@ uint8_t joint_3_data[8];
 uint8_t joint_4_data[8];
 uint8_t joint_5_data[8];
 uint8_t joint_6_data[8];
+uint8_t joint_encoder_data[8];
 
 uint64_t joint_r_data[6];
 
@@ -314,6 +317,16 @@ int main(void)
 	joint_6.FDFormat = FDCAN_CLASSIC_CAN;
 	joint_6.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_6.MessageMarker = 0;
+	
+	joint_encoder.Identifier = 0x7FF;
+	joint_encoder.IdType = FDCAN_STANDARD_ID;
+	joint_encoder.TxFrameType = FDCAN_DATA_FRAME;
+	joint_encoder.DataLength = FDCAN_DLC_BYTES_8;
+	joint_encoder.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_encoder.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_encoder.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_encoder.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_encoder.MessageMarker = 0;
 	
 	HAL_FDCAN_Start(&hfdcan1);
 	HAL_FDCAN_Start(&hfdcan2);
@@ -829,6 +842,24 @@ void send_to_all_slave()
 	}
 }
 
+void send_to_joint(int joint_no)
+{
+	if (joint_no == 1 || joint_no == 2 || joint_no == 3)
+	{
+		if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_encoder, joint_encoder_data) != HAL_OK)
+		{
+			can1_error_counter += 1;
+		}
+	}
+	else if (joint_no == 4 || joint_no == 5 || joint_no == 6)
+	{
+		if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_encoder, joint_encoder_data) != HAL_OK)
+		{
+			can1_error_counter += 1;
+		}
+	}
+}
+
 void pack_motor_data()
 {
 	byte_8.udata = BufferOut.Cust.motor_1;
@@ -876,15 +907,18 @@ void control()
 	if (control_word == 3 && is_enable == 0)
 	{
 		// send enable cmd
-		motor_encoder_val(&joint_1, joint_1_data, 1);
-		motor_encoder_val(&joint_2, joint_2_data, 2);
-		motor_encoder_val(&joint_3, joint_3_data, 3);
-		motor_encoder_val(&joint_4, joint_4_data, 4);
-		motor_encoder_val(&joint_5, joint_5_data, 5);
-		motor_encoder_val(&joint_6, joint_6_data, 6);
-		
-		send_to_all_slave();
-		
+		motor_encoder_val(&joint_encoder, joint_encoder_data, 1);
+		send_to_joint(1);
+		motor_encoder_val(&joint_encoder, joint_encoder_data, 2);
+		send_to_joint(2);
+		motor_encoder_val(&joint_encoder, joint_encoder_data, 3);
+		send_to_joint(3);
+		motor_encoder_val(&joint_encoder, joint_encoder_data, 4);
+		send_to_joint(4);
+		motor_encoder_val(&joint_encoder, joint_encoder_data, 5);
+		send_to_joint(5);
+		motor_encoder_val(&joint_encoder, joint_encoder_data, 6);
+		send_to_joint(6);
 	}
 	
 	if (control_word == 2 && is_enable == 1)
