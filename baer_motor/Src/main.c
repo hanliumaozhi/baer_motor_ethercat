@@ -57,6 +57,7 @@ TIM_HandleTypeDef htim5;
 UART_HandleTypeDef huart8;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_uart8_rx;
 DMA_HandleTypeDef hdma_usart1_rx;
 
 /* USER CODE BEGIN PV */
@@ -222,7 +223,7 @@ void motor_encoder_val(FDCAN_TxHeaderTypeDef* joint_tx, uint8_t* data_buffer, ui
 	data_buffer[7] = 0xf8;
 }
 
-// contact sensor data
+// contact sensor 1 data
 
 static uint8_t contact_sensor_1_buffer[64];
 static uint8_t contact_sensor_1_raw_data[64];
@@ -233,6 +234,17 @@ int cs1_buffer_index = 0;
 int cs1_index_remain = 0;
 
 volatile int cs1_data_available = 0;
+
+// contact sensor 2 data
+static uint8_t contact_sensor_2_buffer[64];
+static uint8_t contact_sensor_2_raw_data[64];
+static uint8_t contact_sensor_2_data[32];
+
+int cs2_raw_counter = 0;
+int cs2_buffer_index = 0;
+int cs2_index_remain = 0;
+
+volatile int cs2_data_available = 0;
 
 #define CS_DATA_LEN 6
 
@@ -378,6 +390,7 @@ int main(void)
 	HAL_Delay(100);
 	
 	HAL_UART_Receive_DMA(&huart1, contact_sensor_1_buffer, CS_DATA_LEN);
+	HAL_UART_Receive_DMA(&huart8, contact_sensor_2_buffer, CS_DATA_LEN);
 
   /* USER CODE END 2 */
 
@@ -773,7 +786,9 @@ static void MX_UART8_Init(void)
   huart8.Init.OverSampling = UART_OVERSAMPLING_16;
   huart8.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
   huart8.Init.ClockPrescaler = UART_PRESCALER_DIV1;
-  huart8.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  huart8.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_RXOVERRUNDISABLE_INIT|UART_ADVFEATURE_DMADISABLEONERROR_INIT;
+  huart8.AdvancedInit.OverrunDisable = UART_ADVFEATURE_OVERRUN_DISABLE;
+  huart8.AdvancedInit.DMADisableonRxError = UART_ADVFEATURE_DMA_DISABLEONRXERROR;
   if (HAL_UART_Init(&huart8) != HAL_OK)
   {
     Error_Handler();
@@ -907,6 +922,9 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream0_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+  /* DMA1_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
 
 }
 
@@ -1287,16 +1305,76 @@ void usart_rx_check(void) {
 	}
 }
 
+
+void usart_process_data_2(const void* data, size_t len) {
+	const uint8_t* d = (uint8_t*)(data);
+	for (int i = 0; i != len; ++i) {
+		contact_sensor_2_raw_data[cs2_raw_counter++] = d[i];
+	}
+	if (cs2_raw_counter >= CS_DATA_LEN) {
+		for (cs2_buffer_index = 0; cs2_buffer_index < (cs2_raw_counter - 1); ++cs2_buffer_index) {
+			if (contact_sensor_2_raw_data[cs2_buffer_index] == 0xFE) {
+				break;
+			}
+		}
+		if (cs2_buffer_index != (cs2_raw_counter - 1)) {
+			if ((cs2_raw_counter - cs2_buffer_index) >= CS_DATA_LEN) {
+				if ((cs2_raw_counter - cs2_buffer_index) >= CS_DATA_LEN) {
+					memcpy(contact_sensor_2_data, &contact_sensor_2_raw_data[cs2_buffer_index], CS_DATA_LEN);
+					cs2_index_remain = (cs2_raw_counter - cs2_buffer_index - CS_DATA_LEN);
+					for (int i = 0; i != cs2_index_remain; ++i) {
+						contact_sensor_2_raw_data[i] = contact_sensor_2_raw_data[(cs2_buffer_index + CS_DATA_LEN + i)];
+					}
+					cs2_raw_counter = cs2_index_remain;
+					cs2_data_available = 1;
+				}
+			}
+		}
+			
+	}
+		
+	if (cs2_raw_counter >= 64) {
+		cs2_raw_counter = 64;
+	}
+}
+
+
+void usart_rx_check_2(void) {
+	static  size_t old_pos_2;
+	size_t pos;
+	
+	pos = CS_DATA_LEN - __HAL_DMA_GET_COUNTER(huart8.hdmarx);
+	if (pos != old_pos_2) {
+		if (pos > old_pos_2) {
+			usart_process_data_2(&contact_sensor_2_buffer[old_pos_2], pos - old_pos_2);
+		}
+		else {
+			/* We are in "overflow" mode */
+		   /* First process data to the end of buffer */
+			usart_process_data_2(&contact_sensor_2_buffer[old_pos_2], CS_DATA_LEN - old_pos_2);
+			/* Check and continue with beginning of buffer */
+			if (pos > 0) {
+				usart_process_data_2(&contact_sensor_2_buffer[0], pos);
+			}
+		}
+	}
+	
+	old_pos_2 = pos;
+	if (old_pos_2 == CS_DATA_LEN) {
+		old_pos_2 = 0;
+	}
+}
+
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart->Instance == USART1)
 	{
 		usart_rx_check();
 	}
-	/*else if (huart->Instance == UART4)
+	else if (huart->Instance == UART8)
 	{
-		sbus_usart_rx_check();
-	}*/
+		usart_rx_check_2();
+	}
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
@@ -1306,11 +1384,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		usart_rx_check();
 		HAL_UART_Receive_DMA(&huart1, contact_sensor_1_buffer, CS_DATA_LEN); 
 	}
-	/*else if (huart->Instance == UART4)
+	else if (huart->Instance == UART8)
 	{
-		sbus_usart_rx_check();
-		HAL_UART_Receive_DMA(&huart4, sbus_data_buffer, SBUS_DATA_LEN); 
-	}*/
+		usart_rx_check_2();
+		HAL_UART_Receive_DMA(&huart8, contact_sensor_2_buffer, CS_DATA_LEN); 
+	}
 }
 
 /* USER CODE END 4 */
