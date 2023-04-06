@@ -958,13 +958,13 @@ void control()
 	
 	if (motor_init_state == 1)
 	{
-		motor_zero(&joint_1, joint_1_data);
+		/*motor_zero(&joint_1, joint_1_data);
 		motor_zero(&joint_2, joint_2_data);
 		motor_zero(&joint_3, joint_3_data);
 		motor_zero(&joint_4, joint_4_data);
 		motor_zero(&joint_5, joint_5_data);
 		motor_zero(&joint_6, joint_6_data);
-		send_to_all_slave();
+		send_to_all_slave();*/
 		motor_init_state = 0;
 	}
 	
