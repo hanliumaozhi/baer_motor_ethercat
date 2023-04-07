@@ -122,12 +122,12 @@ void delay_us(uint16_t us)
 void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 {
 	//TODO 
-	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_8)
+	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_6)
 	{
 		int id = data[0] & 0xF;
 		if (id > 0 && id < 7)
 		{
-			for (size_t i = 0; i < 8; i++)
+			for (size_t i = 0; i < 6; i++)
 			{
 				byte_8_reply.buffer[i] = data[i];
 			}
