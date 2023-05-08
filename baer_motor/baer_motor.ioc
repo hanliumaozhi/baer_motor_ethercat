@@ -1,20 +1,22 @@
 #MicroXplorer Configuration settings - do not modify
 CORTEX_M7.IPParameters=default_mode_Activation
 CORTEX_M7.default_mode_Activation=1
+FDCAN1.AutoRetransmission=ENABLE
 FDCAN1.DataPrescaler=8
 FDCAN1.DataTimeSeg1=10
 FDCAN1.DataTimeSeg2=4
-FDCAN1.IPParameters=NominalPrescaler,NominalTimeSeg1,DataPrescaler,DataTimeSeg1,DataTimeSeg2,RxFifo0ElmtsNbr,TxFifoQueueElmtsNbr,NominalTimeSeg2
+FDCAN1.IPParameters=NominalPrescaler,NominalTimeSeg1,DataPrescaler,DataTimeSeg1,DataTimeSeg2,RxFifo0ElmtsNbr,TxFifoQueueElmtsNbr,NominalTimeSeg2,AutoRetransmission
 FDCAN1.NominalPrescaler=8
 FDCAN1.NominalTimeSeg1=10
 FDCAN1.NominalTimeSeg2=4
 FDCAN1.RxFifo0ElmtsNbr=6
 FDCAN1.TxFifoQueueElmtsNbr=6
+FDCAN2.AutoRetransmission=ENABLE
 FDCAN2.DataPrescaler=8
 FDCAN2.DataSyncJumpWidth=1
 FDCAN2.DataTimeSeg1=10
 FDCAN2.DataTimeSeg2=4
-FDCAN2.IPParameters=NominalPrescaler,NominalTimeSeg1,DataPrescaler,DataSyncJumpWidth,DataTimeSeg1,DataTimeSeg2,RxFifo0ElmtsNbr,TxFifoQueueElmtsNbr,MessageRAMOffset,NominalTimeSeg2
+FDCAN2.IPParameters=NominalPrescaler,NominalTimeSeg1,DataPrescaler,DataSyncJumpWidth,DataTimeSeg1,DataTimeSeg2,RxFifo0ElmtsNbr,TxFifoQueueElmtsNbr,MessageRAMOffset,NominalTimeSeg2,AutoRetransmission
 FDCAN2.MessageRAMOffset=1024
 FDCAN2.NominalPrescaler=8
 FDCAN2.NominalTimeSeg1=10
