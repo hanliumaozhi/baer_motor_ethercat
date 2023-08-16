@@ -6,10 +6,10 @@
 #include <string.h>
 #include "stm32h7xx_hal.h"
 
-#define CUST_BYTE_NUM_OUT	64
-#define CUST_BYTE_NUM_IN	84
-#define TOT_BYTE_NUM_ROUND_OUT	64
-#define TOT_BYTE_NUM_ROUND_IN	84
+#define CUST_BYTE_NUM_OUT	128
+#define CUST_BYTE_NUM_IN	128
+#define TOT_BYTE_NUM_ROUND_OUT	128
+#define TOT_BYTE_NUM_ROUND_IN	128
 
                                                         
 #define SEC_BYTE_NUM_IN  (CUST_BYTE_NUM_IN - 64)   // number of bytes of the second transfer
@@ -18,7 +18,15 @@
 	#define SEC_BYTE_NUM_ROUND_IN  ((SEC_BYTE_NUM_IN | 0x03) + 1)  
 #else                                             // rounded to 4 (long)
 	#define SEC_BYTE_NUM_ROUND_IN  SEC_BYTE_NUM_IN  //
-#endif                                            //
+#endif        
+
+#define SEC_BYTE_NUM_OUT  (CUST_BYTE_NUM_OUT - 64)   // number of bytes of the second transfer
+
+#if ((SEC_BYTE_NUM_OUT & 0x03) != 0x00)            // number of bytes of the second transfer
+#define SEC_BYTE_NUM_ROUND_OUT  ((SEC_BYTE_NUM_OUT | 0x03) + 1)  
+#else                                             // rounded to 4 (long)
+#define SEC_BYTE_NUM_ROUND_OUT  SEC_BYTE_NUM_OUT  //
+#endif   
 
 #define SEC_LONG_NUM_IN  SEC_BYTE_NUM_ROUND_IN/4  // number of long of the second transfer
 
@@ -91,16 +99,24 @@ typedef union												//---- output buffer ----
 	uint8_t  Byte[TOT_BYTE_NUM_ROUND_OUT];
 	struct
 	{
+		uint64_t    node_1;
+		uint64_t    node_2;
+		uint64_t    node_3;
+		uint64_t    node_4;
+		uint64_t    node_5;
+		uint64_t    node_6;
+		uint64_t    node_7;
+		uint64_t    node_8;
+		uint64_t    node_9;
+		uint64_t    node_10;
 		uint64_t    hs;
-		uint64_t    motor_1;
-		uint64_t    motor_2;
-		uint64_t    motor_3;
-		uint64_t    motor_4;
-		uint64_t    motor_5;
-		uint64_t    motor_6;
-		uint32_t    test_word;
-		uint16_t    control_word;
-		uint16_t    motor_enable;
+		uint64_t    can_length;
+		uint64_t    data_1;
+		uint64_t    data_2;
+		uint64_t    data_3;
+		uint32_t    control_word;
+		uint16_t    can1_id;
+		uint16_t    can2_id;
 	}Cust;
 } PROCBUFFER_OUT;
 
@@ -111,20 +127,24 @@ typedef union												//---- input buffer ----
 	struct
 	{
 		uint64_t    hs;
-		uint64_t    motor_1;
-		uint64_t    motor_2;
-		uint64_t    motor_3;
-		uint64_t    motor_4;
-		uint64_t    motor_5;
-		uint64_t    motor_6;
-		uint64_t    test_word_byte_8;
-		uint32_t    can1_error_log;
-		uint32_t    can2_error_log;
-		uint32_t    test_word_byte_4;
-		uint16_t    fsm;
+		uint64_t    can_length;
+		uint64_t    node_1;
+		uint64_t    node_2;
+		uint64_t    node_3;
+		uint64_t    node_4;
+		uint64_t    node_5;
+		uint64_t    node_6;
+		uint64_t    node_7;
+		uint64_t    node_8;
+		uint64_t    node_9;
+		uint64_t    node_10;
+		uint64_t    data1;
+		uint64_t    data2;
+		uint32_t    rec_loss_time1;
+		uint32_t    rec_loss_time2;
+		uint32_t    rec_loss_time3;
 		uint16_t    rec_error_can1;
 		uint16_t    rec_error_can2;
-		uint16_t    motor_status;
 	}Cust;
 } PROCBUFFER_IN;
 
