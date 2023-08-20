@@ -233,6 +233,55 @@ void can_msg_length_pack(int slave_no, uint64_t length)
 	BufferIn.Cust.can_length = (BufferIn.Cust.can_length | (length << bit_offset));
 }
 
+void reply_pack_1(int slave_no, uint32_t hs_reply)
+{
+	// 
+	uint32_t bit_offset = ((slave_no - 1) * 8);
+	uint32_t tmp_one = 1;
+	BufferIn.Cust.rec_loss_time1 = BufferIn.Cust.rec_loss_time1 & (~(tmp_one << (bit_offset)));
+	BufferIn.Cust.rec_loss_time1 = BufferIn.Cust.rec_loss_time1 & (~(tmp_one << (bit_offset + 1)));
+	BufferIn.Cust.rec_loss_time1 = BufferIn.Cust.rec_loss_time1 & (~(tmp_one << (bit_offset + 2)));
+	BufferIn.Cust.rec_loss_time1 = BufferIn.Cust.rec_loss_time1 & (~(tmp_one << (bit_offset + 3)));
+	BufferIn.Cust.rec_loss_time1 = BufferIn.Cust.rec_loss_time1 & (~(tmp_one << (bit_offset + 4)));
+	BufferIn.Cust.rec_loss_time1 = BufferIn.Cust.rec_loss_time1 & (~(tmp_one << (bit_offset + 5)));
+	BufferIn.Cust.rec_loss_time1 = BufferIn.Cust.rec_loss_time1 & (~(tmp_one << (bit_offset + 6)));
+	BufferIn.Cust.rec_loss_time1 = BufferIn.Cust.rec_loss_time1 & (~(tmp_one << (bit_offset + 7)));
+	BufferIn.Cust.rec_loss_time1 = (BufferIn.Cust.rec_loss_time1 | (hs_reply << bit_offset));
+}
+
+void reply_pack_2(int slave_no, uint32_t hs_reply)
+{
+	// 
+	uint32_t bit_offset = ((slave_no - 1) * 8);
+	uint32_t tmp_one = 1;
+	BufferIn.Cust.rec_loss_time2 = BufferIn.Cust.rec_loss_time2 & (~(tmp_one << (bit_offset)));
+	BufferIn.Cust.rec_loss_time2 = BufferIn.Cust.rec_loss_time2 & (~(tmp_one << (bit_offset + 1)));
+	BufferIn.Cust.rec_loss_time2 = BufferIn.Cust.rec_loss_time2 & (~(tmp_one << (bit_offset + 2)));
+	BufferIn.Cust.rec_loss_time2 = BufferIn.Cust.rec_loss_time2 & (~(tmp_one << (bit_offset + 3)));
+	BufferIn.Cust.rec_loss_time2 = BufferIn.Cust.rec_loss_time2 & (~(tmp_one << (bit_offset + 4)));
+	BufferIn.Cust.rec_loss_time2 = BufferIn.Cust.rec_loss_time2 & (~(tmp_one << (bit_offset + 5)));
+	BufferIn.Cust.rec_loss_time2 = BufferIn.Cust.rec_loss_time2 & (~(tmp_one << (bit_offset + 6)));
+	BufferIn.Cust.rec_loss_time2 = BufferIn.Cust.rec_loss_time2 & (~(tmp_one << (bit_offset + 7)));
+	BufferIn.Cust.rec_loss_time2 = (BufferIn.Cust.rec_loss_time2 | (hs_reply << bit_offset));
+}
+
+void reply_pack_3(int slave_no, uint32_t hs_reply)
+{
+	// 
+	uint32_t bit_offset = ((slave_no - 1) * 8);
+	uint32_t tmp_one = 1;
+	BufferIn.Cust.rec_loss_time3 = BufferIn.Cust.rec_loss_time3 & (~(tmp_one << (bit_offset)));
+	BufferIn.Cust.rec_loss_time3 = BufferIn.Cust.rec_loss_time3 & (~(tmp_one << (bit_offset + 1)));
+	BufferIn.Cust.rec_loss_time3 = BufferIn.Cust.rec_loss_time3 & (~(tmp_one << (bit_offset + 2)));
+	BufferIn.Cust.rec_loss_time3 = BufferIn.Cust.rec_loss_time3 & (~(tmp_one << (bit_offset + 3)));
+	BufferIn.Cust.rec_loss_time3 = BufferIn.Cust.rec_loss_time3 & (~(tmp_one << (bit_offset + 4)));
+	BufferIn.Cust.rec_loss_time3 = BufferIn.Cust.rec_loss_time3 & (~(tmp_one << (bit_offset + 5)));
+	BufferIn.Cust.rec_loss_time3 = BufferIn.Cust.rec_loss_time3 & (~(tmp_one << (bit_offset + 6)));
+	BufferIn.Cust.rec_loss_time3 = BufferIn.Cust.rec_loss_time3 & (~(tmp_one << (bit_offset + 7)));
+	BufferIn.Cust.rec_loss_time3 = (BufferIn.Cust.rec_loss_time3 | (hs_reply << bit_offset));
+}
+
+
 
 void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 {
@@ -1247,6 +1296,24 @@ void pack_ethercat_data()
 	BufferIn.Cust.node_8 = joint_r_data[7];
 	BufferIn.Cust.node_9 = joint_r_data[8];
 	BufferIn.Cust.node_10 = joint_r_data[9];
+	
+	for (size_t i = 0; i < 4; i++)
+	{
+		uint32_t hs_tmp = hs_ - reply_hs[i];	
+		reply_pack_1(i, hs_tmp);
+	}
+	
+	for (size_t i = 4; i < 8; i++)
+	{
+		uint32_t hs_tmp = hs_ - reply_hs[i];	
+		reply_pack_1((i-4), hs_tmp);
+	}
+	
+	for (size_t i = 8; i < 10; i++)
+	{
+		uint32_t hs_tmp = hs_ - reply_hs[i];	
+		reply_pack_1((i-8), hs_tmp);
+	}
 	
 	BufferIn.Cust.rec_error_can1 = (uint16_t)can1_last_error_code;
 	BufferIn.Cust.rec_error_can2 = (uint16_t)can2_last_error_code;
