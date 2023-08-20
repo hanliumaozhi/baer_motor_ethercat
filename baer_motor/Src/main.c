@@ -101,7 +101,7 @@ union Byte8
 
 union Byte8 byte_8;
 union Byte8 byte_8_reply;
-uint64_t reply_hs[6];
+uint64_t reply_hs[10];
 
 
 // configure which can port
@@ -190,46 +190,6 @@ uint32_t get_data_len_code(uint8_t data_len)
 	return 0;
 }
 
-void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
-{
-	//TODO 
-	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_6)
-	{
-		int id = data[0] & 0xF;
-		if (id > 0 && id < 7)
-		{
-			for (size_t i = 0; i < 6; i++)
-			{
-				byte_8_reply.buffer[i] = data[i];
-			}
-			
-			joint_r_data[id - 1] = byte_8_reply.udata;
-			reply_hs[id - 1] = hs_;
-		}
-	}
-	else if (pRxHeader->DataLength == FDCAN_DLC_BYTES_5)
-	{
-		int id = data[4];
-		if (id > 0 && id < 7)
-		{
-			for (size_t i = 0; i < 5; i++)
-			{
-				byte_8_reply.buffer[i] = data[i];
-			}
-			
-			for (size_t i = 5; i < 8; i++)
-			{
-				byte_8_reply.buffer[i] = 0;
-			}
-			
-			
-			joint_r_data[id - 1] = byte_8_reply.udata;
-			reply_hs[id - 1] = hs_;
-		}
-	}
-	
-}
-
 void can_slave_routing_unpack()
 {
 	for (int i = 0; i < 10; ++i) {
@@ -268,12 +228,82 @@ void can_msg_length_pack(int slave_no, uint64_t length)
 	uint64_t tmp_one = 1;
 	BufferIn.Cust.can_length = BufferIn.Cust.can_length & (~(tmp_one << (bit_offset)));
 	BufferIn.Cust.can_length = BufferIn.Cust.can_length & (~(tmp_one << (bit_offset + 1)));
-	BufferIn.Cust.can_length = BufferIn.Cust.can_length & (~(tmp_one << (bit_offset + 1)));
-	BufferIn.Cust.can_length = BufferIn.Cust.can_length & (~(tmp_one << (bit_offset + 1)));
+	BufferIn.Cust.can_length = BufferIn.Cust.can_length & (~(tmp_one << (bit_offset + 2)));
+	BufferIn.Cust.can_length = BufferIn.Cust.can_length & (~(tmp_one << (bit_offset + 3)));
 	BufferIn.Cust.can_length = (BufferIn.Cust.can_length | (length << bit_offset));
 }
 
 
+void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
+{
+	//TODO 
+	/*if (pRxHeader->DataLength == FDCAN_DLC_BYTES_6)
+	{
+		int id = data[0] & 0xF;
+		if (id > 0 && id < 7)
+		{
+			for (size_t i = 0; i < 6; i++)
+			{
+				byte_8_reply.buffer[i] = data[i];
+			}
+			
+			joint_r_data[id - 1] = byte_8_reply.udata;
+			reply_hs[id - 1] = hs_;
+		}
+	}
+	else if (pRxHeader->DataLength == FDCAN_DLC_BYTES_5)
+	{
+		int id = data[4];
+		if (id > 0 && id < 7)
+		{
+			for (size_t i = 0; i < 5; i++)
+			{
+				byte_8_reply.buffer[i] = data[i];
+			}
+			
+			for (size_t i = 5; i < 8; i++)
+			{
+				byte_8_reply.buffer[i] = 0;
+			}
+			
+			
+			joint_r_data[id - 1] = byte_8_reply.udata;
+			reply_hs[id - 1] = hs_;
+		}
+	}*/
+	
+	uint32_t id = pRxHeader->Identifier - 0x40;
+	if (id > 0 && id < 11)
+	{
+		int buffer_len = get_data_len(pRxHeader->DataLength);
+		
+		for (int i = 0; i < buffer_len; i++)
+		{
+			byte_8_reply.buffer[i] = data[i];
+		}
+		can_msg_length_pack(id, buffer_len);
+		
+		//can_msg_length_in[id - 1] = buffer_len;
+		joint_r_data[id - 1] = byte_8_reply.udata;
+		reply_hs[id - 1] = hs_;
+	}
+	
+	id = pRxHeader->Identifier - 0x90;
+	if (id > 0 && id < 11)
+	{
+		int buffer_len = get_data_len(pRxHeader->DataLength);
+		
+		for (int i = 0; i < buffer_len; i++)
+		{
+			byte_8_reply.buffer[i] = data[i];
+		}
+		can_msg_length_pack(id, buffer_len);
+		//can_msg_length_in[id - 1] = buffer_len;
+		joint_r_data[id - 1] = byte_8_reply.udata;
+		reply_hs[id - 1] = hs_;
+	}
+	
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -1117,12 +1147,85 @@ void send_to_joint(int joint_no)
 
 void pack_motor_data()
 {
-	//pass
+	can_msg_length_unpack();
+	
+	byte_8.udata = BufferOut.Cust.node_1;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_1_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.node_2;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_2_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.node_3;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_3_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.node_4;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_4_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.node_5;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_5_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.node_6;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_6_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.node_7;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_7_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.node_8;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_8_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.node_9;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_9_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.node_10;
+	for (size_t i = 0; i < 8; i++)
+	{
+		slave_10_data[i] = byte_8.buffer[i];
+	}
+	
+	// setting msg data length
+	slave_1.DataLength = get_data_len_code(can_msg_length_out[0]);
+	slave_2.DataLength = get_data_len_code(can_msg_length_out[1]);
+	slave_3.DataLength = get_data_len_code(can_msg_length_out[2]);
+	slave_4.DataLength = get_data_len_code(can_msg_length_out[3]);
+	slave_5.DataLength = get_data_len_code(can_msg_length_out[4]);
+	slave_6.DataLength = get_data_len_code(can_msg_length_out[5]);
+	slave_7.DataLength = get_data_len_code(can_msg_length_out[6]);
+	slave_8.DataLength = get_data_len_code(can_msg_length_out[7]);
+	slave_9.DataLength = get_data_len_code(can_msg_length_out[8]);
+	slave_10.DataLength = get_data_len_code(can_msg_length_out[9]);
 }
 
 void control()
 {
 	//pass
+	pack_motor_data();
 }
 
 uint16_t get_motor_status()
@@ -1134,8 +1237,20 @@ void pack_ethercat_data()
 {
 	BufferIn.Cust.hs = hs_;
 	
+	BufferIn.Cust.node_1 = joint_r_data[0];
+	BufferIn.Cust.node_2 = joint_r_data[1];
+	BufferIn.Cust.node_3 = joint_r_data[2];
+	BufferIn.Cust.node_4 = joint_r_data[3];
+	BufferIn.Cust.node_5 = joint_r_data[4];
+	BufferIn.Cust.node_6 = joint_r_data[5];
+	BufferIn.Cust.node_7 = joint_r_data[6];
+	BufferIn.Cust.node_8 = joint_r_data[7];
+	BufferIn.Cust.node_9 = joint_r_data[8];
+	BufferIn.Cust.node_10 = joint_r_data[9];
+	
 	BufferIn.Cust.rec_error_can1 = (uint16_t)can1_last_error_code;
 	BufferIn.Cust.rec_error_can2 = (uint16_t)can2_last_error_code;
+	
 	
 }
 
