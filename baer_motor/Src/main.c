@@ -114,6 +114,7 @@ int can_msg_length_out[10];
 //in: ethercat slave -> ethercat master
 uint64_t can_msg_length_bin_in = 0;
 int can_msg_length_in[10];
+uint8_t can_id_list[10];
 
 /* USER CODE END PV */
 
@@ -218,6 +219,24 @@ void can_msg_length_unpack()
 		int length_tmp = (int)((can_msg_length_bin >> ((i) * 4)) & 15);
 		can_msg_length_out[i] = length_tmp;
 	}
+}
+
+//master -> slave
+void can_id_unpack()
+{
+	uint64_t can_id_list_1 = BufferOut.Cust.data_1;
+	for (int i = 0; i < 8; ++i) {
+		uint8_t id_tmp = (uint8_t)((can_id_list_1 >> ((i) * 8)) & 0xff);
+		can_id_list[i] = id_tmp;
+	}
+	
+	uint64_t can_id_list_2 = BufferOut.Cust.data_2;
+	
+	uint8_t id_tmp_1 = (uint8_t)((can_id_list_2 >> ((0) * 8)) & 0xff);
+	can_id_list[8] = id_tmp_1;
+	
+	uint8_t id_tmp_2 = (uint8_t)((can_id_list_2 >> ((1) * 8)) & 0xff);
+	can_id_list[9] = id_tmp_2;
 }
 
 // slave -> master
@@ -1197,6 +1216,7 @@ void send_to_joint(int joint_no)
 void pack_motor_data()
 {
 	can_msg_length_unpack();
+	can_id_unpack();
 	
 	byte_8.udata = BufferOut.Cust.node_1;
 	for (size_t i = 0; i < 8; i++)
@@ -1269,12 +1289,25 @@ void pack_motor_data()
 	slave_8.DataLength = get_data_len_code(can_msg_length_out[7]);
 	slave_9.DataLength = get_data_len_code(can_msg_length_out[8]);
 	slave_10.DataLength = get_data_len_code(can_msg_length_out[9]);
+	
+	slave_1.Identifier = can_id_list[0];
+	slave_2.Identifier = can_id_list[1];
+	slave_3.Identifier = can_id_list[2];
+	slave_4.Identifier = can_id_list[3];
+	slave_5.Identifier = can_id_list[4];
+	slave_6.Identifier = can_id_list[5];
+	slave_7.Identifier = can_id_list[6];
+	slave_8.Identifier = can_id_list[7];
+	slave_9.Identifier = can_id_list[8];
+	slave_10.Identifier = can_id_list[9];
 }
 
 void control()
 {
 	//pass
 	pack_motor_data();
+	
+	send_to_all_slave();
 }
 
 uint16_t get_motor_status()
