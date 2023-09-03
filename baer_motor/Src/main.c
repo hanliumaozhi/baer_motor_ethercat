@@ -204,7 +204,7 @@ void can_slave_routing_unpack()
 		}
 	}
 	for (int i = 0; i < 10; ++i) {
-		uint64_t can2 = BufferOut.Cust.can1_id;
+		uint64_t can2 = BufferOut.Cust.can2_id;
 		if (((can2 >> i) & 1) == 1) {
 			slave_routing[i] = 2;
 		}
@@ -225,17 +225,18 @@ void can_msg_length_unpack()
 void can_id_unpack()
 {
 	uint64_t can_id_list_1 = BufferOut.Cust.data_1;
+	uint64_t tmp_ff = 0xff;
 	for (int i = 0; i < 8; ++i) {
-		uint8_t id_tmp = (uint8_t)((can_id_list_1 >> ((i) * 8)) & 0xff);
+		uint8_t id_tmp = (uint8_t)((can_id_list_1 >> ((i) * 8)) & tmp_ff);
 		can_id_list[i] = id_tmp;
 	}
 	
 	uint64_t can_id_list_2 = BufferOut.Cust.data_2;
 	
-	uint8_t id_tmp_1 = (uint8_t)((can_id_list_2 >> ((0) * 8)) & 0xff);
+	uint8_t id_tmp_1 = (uint8_t)((can_id_list_2 >> ((0) * 8)) & tmp_ff);
 	can_id_list[8] = id_tmp_1;
 	
-	uint8_t id_tmp_2 = (uint8_t)((can_id_list_2 >> ((1) * 8)) & 0xff);
+	uint8_t id_tmp_2 = (uint8_t)((can_id_list_2 >> ((1) * 8)) & tmp_ff);
 	can_id_list[9] = id_tmp_2;
 }
 
@@ -1330,6 +1331,13 @@ void pack_ethercat_data()
 	BufferIn.Cust.node_9 = joint_r_data[8];
 	BufferIn.Cust.node_10 = joint_r_data[9];
 	
+	
+	/*BufferIn.Cust.data1 = slave_routing[0];
+	BufferIn.Cust.node_1 = BufferOut.Cust.node_1;
+	BufferIn.Cust.data2 = can_id_list[0];
+	BufferIn.Cust.node_2 = BufferOut.Cust.can1_id;
+	BufferIn.Cust.node_3 = BufferOut.Cust.data_1;
+	BufferIn.Cust.node_4 = BufferOut.Cust.hs;*/
 	for (size_t i = 0; i < 4; i++)
 	{
 		uint32_t hs_tmp = hs_ - reply_hs[i];	
@@ -1365,11 +1373,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		uint64_t tmp_hs_ = BufferOut.Cust.hs;
 		
 		// 1. control
-		if (tmp_hs_ > hs_ || tmp_hs_ == 1)
+		if (tmp_hs_ > hs_ || tmp_hs_ < 5)
 		{
 			control_word = BufferOut.Cust.control_word;
 			
-			if (tmp_hs_ == 1)
+			if (tmp_hs_ < 5)
 			{
 				is_enable = 0;
 				// read routing configure

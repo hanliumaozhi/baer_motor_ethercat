@@ -158,7 +158,7 @@ void SPIWriteProcRamFifo(spiCTX* ctx) {
 	HAL_GPIO_WritePin(CSS_GPIO_Port, CSS_Pin, GPIO_PIN_SET);
 }
 
-#define FST_BYTE_NUM_ROUND_OUT TOT_BYTE_NUM_ROUND_OUT
+#define FST_BYTE_NUM_ROUND_OUT 64
 /*
  * To master
  */
@@ -194,7 +194,7 @@ void SPIReadProcRamFifo(spiCTX* ctx) {
 	
 	// second 
 	do {                                                                  
-		TempLong.Long = SPIReadRegisterDirect(ctx, ECAT_PRAM_WR_CMD, 2);
+		TempLong.Long = SPIReadRegisterDirect(ctx, ECAT_PRAM_RD_CMD, 2);
 	} while (TempLong.Byte[1] < (SEC_BYTE_NUM_ROUND_OUT / 4));
 	
 	Buffer[0] = COMM_SPI_READ;
@@ -204,7 +204,7 @@ void SPIReadProcRamFifo(spiCTX* ctx) {
 	HAL_GPIO_WritePin(CSS_GPIO_Port, CSS_Pin, GPIO_PIN_RESET);
 	if (HAL_SPI_Transmit(ctx->spi, Buffer, 3, SPI_TIMEOUT_MAX) != HAL_OK) {
 	}
-	if (HAL_SPI_Transmit(ctx->spi, &ctx->bIn->Byte[64], SEC_BYTE_NUM_ROUND_OUT, SPI_TIMEOUT_MAX) != HAL_OK) {
+	if (HAL_SPI_Receive(ctx->spi, &ctx->bOut->Byte[64], SEC_BYTE_NUM_ROUND_OUT, SPI_TIMEOUT_MAX) != HAL_OK) {
 	}
 	HAL_GPIO_WritePin(CSS_GPIO_Port, CSS_Pin, GPIO_PIN_SET);
 }
