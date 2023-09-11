@@ -1384,7 +1384,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 				can_slave_routing_unpack();
 			}
 			
-			control();
+			if (control_word == 1)
+			{
+				control();
+			}
 			
 			hs_ = tmp_hs_;
 			
