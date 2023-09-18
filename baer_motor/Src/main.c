@@ -1138,61 +1138,73 @@ void send_to_all_slave()
 		// pass
 	}
 	
-	if (slave_routing[7] == 1)
+	uint64_t tmp_one = 0x01;
+	if ((BufferOut.Cust.data_3 & tmp_one) == tmp_one)
 	{
-		if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &slave_8, slave_8_data) != HAL_OK)
+		if (slave_routing[7] == 1)
 		{
-			can1_error_counter += 1;
+			if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &slave_8, slave_8_data) != HAL_OK)
+			{
+				can1_error_counter += 1;
+			}
 		}
-	}
-	else if (slave_routing[7] == 2)
-	{
-		if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &slave_8, slave_8_data) != HAL_OK)
+		else if (slave_routing[7] == 2)
 		{
-			can2_error_counter += 1;
+			if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &slave_8, slave_8_data) != HAL_OK)
+			{
+				can2_error_counter += 1;
+			}
 		}
-	}
-	else
-	{
-		// pass
+		else
+		{
+			// pass
+		}
 	}
 	
-	if (slave_routing[8] == 1)
+	uint64_t tmp_two = 0x02;
+	if ((BufferOut.Cust.data_3 & tmp_two) == tmp_two)
 	{
-		if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &slave_9, slave_9_data) != HAL_OK)
+		if (slave_routing[8] == 1)
 		{
-			can1_error_counter += 1;
+			if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &slave_9, slave_9_data) != HAL_OK)
+			{
+				can1_error_counter += 1;
+			}
 		}
-	}
-	else if (slave_routing[8] == 2)
-	{
-		if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &slave_9, slave_9_data) != HAL_OK)
+		else if (slave_routing[8] == 2)
 		{
-			can2_error_counter += 1;
+			if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &slave_9, slave_9_data) != HAL_OK)
+			{
+				can2_error_counter += 1;
+			}
 		}
-	}
-	else
-	{
-		// pass
+		else
+		{
+			// pass
+		}
 	}
 	
-	if (slave_routing[9] == 1)
+	uint64_t tmp_four = 0x04;
+	if ((BufferOut.Cust.data_3 & tmp_four) == tmp_four)
 	{
-		if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &slave_10, slave_10_data) != HAL_OK)
+		if (slave_routing[9] == 1)
 		{
-			can1_error_counter += 1;
+			if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &slave_10, slave_10_data) != HAL_OK)
+			{
+				can1_error_counter += 1;
+			}
 		}
-	}
-	else if (slave_routing[9] == 2)
-	{
-		if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &slave_10, slave_10_data) != HAL_OK)
+		else if (slave_routing[9] == 2)
 		{
-			can2_error_counter += 1;
+			if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &slave_10, slave_10_data) != HAL_OK)
+			{
+				can2_error_counter += 1;
+			}
 		}
-	}
-	else
-	{
-		// pass
+		else
+		{
+			// pass
+		}
 	}
 }
 
