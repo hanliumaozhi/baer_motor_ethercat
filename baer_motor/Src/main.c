@@ -341,7 +341,7 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 		}
 	}*/
 	
-	uint32_t id = pRxHeader->Identifier - 0x40;
+	uint32_t id = pRxHeader->Identifier;
 	if (id > 0 && id < 11)
 	{
 		int buffer_len = get_data_len(pRxHeader->DataLength);
@@ -352,21 +352,6 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 		}
 		can_msg_length_pack(id, buffer_len);
 		
-		//can_msg_length_in[id - 1] = buffer_len;
-		joint_r_data[id - 1] = byte_8_reply.udata;
-		reply_hs[id - 1] = hs_;
-	}
-	
-	id = pRxHeader->Identifier - 0x90;
-	if (id > 0 && id < 11)
-	{
-		int buffer_len = get_data_len(pRxHeader->DataLength);
-		
-		for (int i = 0; i < buffer_len; i++)
-		{
-			byte_8_reply.buffer[i] = data[i];
-		}
-		can_msg_length_pack(id, buffer_len);
 		//can_msg_length_in[id - 1] = buffer_len;
 		joint_r_data[id - 1] = byte_8_reply.udata;
 		reply_hs[id - 1] = hs_;
