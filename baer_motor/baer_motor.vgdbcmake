@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<VisualGDBProjectSettings2 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<VisualGDBProjectSettings2 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ConfigurationName>Debug</ConfigurationName>
   <Project xsi:type="com.visualgdb.project.embedded">
     <CustomSourceDirectories>
@@ -12,14 +12,15 @@
     <ExportAdvancedBuildVariables>false</ExportAdvancedBuildVariables>
     <SkipImportedProjectChecks>false</SkipImportedProjectChecks>
     <MemoryListSource>DeviceDefinition</MemoryListSource>
+    <TroubleshootGeneratedConfigurationFiles>false</TroubleshootGeneratedConfigurationFiles>
   </Project>
   <Build xsi:type="com.visualgdb.build.cmake">
     <BuildLogMode xsi:nil="true" />
     <ToolchainID>
       <ID>com.visualgdb.arm-eabi</ID>
       <Version>
-        <GCC>10.3.1</GCC>
-        <GDB>10.2.90</GDB>
+        <GCC>12.3.1</GCC>
+        <GDB>13.2</GDB>
         <Revision>1</Revision>
       </Version>
     </ToolchainID>
@@ -58,6 +59,7 @@
         <BuildAllTargetsInSubdir>false</BuildAllTargetsInSubdir>
         <FoldSingleItemPathLevels>true</FoldSingleItemPathLevels>
       </ProjectItemSettings>
+      <TargetSpecificSettings />
       <SetLDLibraryPathFromDependentArtifacts>true</SetLDLibraryPathFromDependentArtifacts>
       <ProjectGUID>ca22f229-93d2-477d-b980-a59744636406</ProjectGUID>
       <VirtualFolders />
@@ -84,6 +86,7 @@
     <ShowMessageAfterExecuting>true</ShowMessageAfterExecuting>
   </CustomShortcuts>
   <UserDefinedVariables />
+  <ImportedPropertySheets />
   <CodeSense>
     <Enabled>Unknown</Enabled>
     <ExtraSettings>
@@ -96,6 +99,8 @@
       <Enabled>false</Enabled>
     </CodeAnalyzerSettings>
   </CodeSense>
+  <Configurations />
+  <ProgramArgumentsSuggestions />
   <Debug xsi:type="com.visualgdb.debug.embedded">
     <AdditionalStartupCommands />
     <AdditionalGDBSettings>
