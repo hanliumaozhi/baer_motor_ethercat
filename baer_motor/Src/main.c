@@ -122,7 +122,7 @@ void delay_us(uint16_t us)
 void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 {
 	//TODO 
-	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_6)
+	/*if (pRxHeader->DataLength == FDCAN_DLC_BYTES_6)
 	{
 		int id = data[0] & 0xF;
 		if (id > 0 && id < 7)
@@ -151,6 +151,21 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 				byte_8_reply.buffer[i] = 0;
 			}
 			
+			
+			joint_r_data[id - 1] = byte_8_reply.udata;
+			reply_hs[id - 1] = hs_;
+		}
+	}*/
+	
+	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_7)
+	{
+		int id = pRxHeader->Identifier;
+		if (id > 0 && id < 7)
+		{
+			for (size_t i = 0; i < 7; i++)
+			{
+				byte_8_reply.buffer[i] = data[i];
+			}
 			
 			joint_r_data[id - 1] = byte_8_reply.udata;
 			reply_hs[id - 1] = hs_;
@@ -901,7 +916,7 @@ void pack_motor_data()
 
 void control()
 {
-	int is_init = 0;
+	/*int is_init = 0;
 	
 	
 	if (control_word == 3 && is_enable == 0)
@@ -958,17 +973,10 @@ void control()
 	
 	if (motor_init_state == 1)
 	{
-		/*motor_zero(&joint_1, joint_1_data);
-		motor_zero(&joint_2, joint_2_data);
-		motor_zero(&joint_3, joint_3_data);
-		motor_zero(&joint_4, joint_4_data);
-		motor_zero(&joint_5, joint_5_data);
-		motor_zero(&joint_6, joint_6_data);
-		send_to_all_slave();*/
 		motor_init_state = 0;
-	}
+	}*/
 	
-	if (control_word == 1 && is_enable)
+	if (control_word == 1)
 	{
 		pack_motor_data();
 		send_to_all_slave();
@@ -996,6 +1004,37 @@ uint16_t get_motor_status()
 	return motor_status_;
 }
 
+void pack_hs_loss_data(int slave_no, uint64_t data)
+{
+	uint64_t bit_offset = ((slave_no - 1) * 8);
+	uint64_t tmp_one = 1;
+	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset)));
+	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 1)));
+	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 2)));
+	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 3)));
+	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 4)));
+	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 5)));
+	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 6)));
+	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 7)));
+	BufferIn.Cust.hs_record = (BufferIn.Cust.hs_record | (data << bit_offset));
+}
+
+void pack_hs_data()
+{
+	for (size_t i = 0; i < 6; i++)
+	{
+		uint64_t tmp = hs_ - reply_hs[i];
+		
+		if (tmp > 250)
+		{
+			tmp = 250;
+		}
+		
+		pack_hs_loss_data(i, tmp);
+	
+	}
+}
+
 void pack_ethercat_data()
 {
 	BufferIn.Cust.hs = hs_;
@@ -1013,8 +1052,11 @@ void pack_ethercat_data()
 	BufferIn.Cust.rec_error_can1 = (uint16_t)can1_last_error_code;
 	BufferIn.Cust.rec_error_can2 = (uint16_t)can2_last_error_code;
 	
+	// pack hs data
+	pack_hs_data();
+	
 	//error protect
-	BufferIn.Cust.motor_status = get_motor_status();
+	//BufferIn.Cust.motor_status = get_motor_status();
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)

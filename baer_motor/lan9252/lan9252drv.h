@@ -7,9 +7,9 @@
 #include "stm32h7xx_hal.h"
 
 #define CUST_BYTE_NUM_OUT	64
-#define CUST_BYTE_NUM_IN	84
+#define CUST_BYTE_NUM_IN	92
 #define TOT_BYTE_NUM_ROUND_OUT	64
-#define TOT_BYTE_NUM_ROUND_IN	84
+#define TOT_BYTE_NUM_ROUND_IN	92
 
                                                         
 #define SEC_BYTE_NUM_IN  (CUST_BYTE_NUM_IN - 64)   // number of bytes of the second transfer
@@ -25,7 +25,7 @@
 #define FST_BYTE_NUM_IN  64                       // number of bytes of the first transfer     
 #define FST_BYTE_NUM_ROUND_IN  64                 // number of bytes of the first transfer
                                                   // rounded to 4 (long)
-#define FST_LONG_NUM_IN  20                       // number of long of the second transfer
+#define FST_LONG_NUM_IN  28                       // number of long of the second transfer
 
 #define SPI_TIMEOUT_MAX				0x1000
 #define CMD_LENGTH					((uint16_t)0x0004)
@@ -118,13 +118,14 @@ typedef union												//---- input buffer ----
 		uint64_t    motor_5;
 		uint64_t    motor_6;
 		uint64_t    test_word_byte_8;
+		uint64_t    hs_record;
 		uint32_t    can1_error_log;
 		uint32_t    can2_error_log;
 		uint32_t    test_word_byte_4;
-		uint16_t    fsm;
-		uint16_t    rec_error_can1;
 		uint16_t    rec_error_can2;
+		uint16_t    rec_error_can1;
 		uint16_t    motor_status;
+		uint16_t    fsm;
 	}Cust;
 } PROCBUFFER_IN;
 
