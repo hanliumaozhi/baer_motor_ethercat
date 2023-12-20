@@ -990,6 +990,36 @@ void control()
 		motor_init_state = 0;
 	}*/
 	
+	
+	int is_init = 0;
+	
+	if (control_word == 1 && is_enable == 0)
+	{
+		// send enable cmd
+		motor_enable(&joint_1, joint_1_data);
+		motor_enable(&joint_2, joint_2_data);
+		motor_enable(&joint_3, joint_3_data);
+		motor_enable(&joint_4, joint_4_data);
+		motor_enable(&joint_5, joint_5_data);
+		motor_enable(&joint_6, joint_6_data);
+		
+		send_to_all_slave();
+		
+		is_enable = 1;
+		//motor_init_state = 1;
+		is_init = 1;
+	}
+	if (is_init)
+	{
+		return;
+	}
+	
+	/*if (motor_init_state == 1)
+	{
+		motor_init_state = 0;
+	}*/
+	
+	
 	if (control_word == 1)
 	{
 		pack_motor_data();
@@ -1088,7 +1118,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			control_word = BufferOut.Cust.control_word;
 			
-			if (tmp_hs_ == 1)
+			if (tmp_hs_ == 1 || tmp_hs_ == 2)
 			{
 				is_enable = 0;
 			}
