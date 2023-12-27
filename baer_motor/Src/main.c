@@ -159,7 +159,7 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 	
 	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_8)
 	{
-		int id = pRxHeader->Identifier;
+		int id = data[0] & 0xF;
 		if (id > 0 && id < 7)
 		{
 			for (size_t i = 0; i < 8; i++)
