@@ -1052,7 +1052,7 @@ void pack_hs_loss_data(int slave_no, uint64_t data)
 {
 	uint64_t bit_offset = ((slave_no - 1) * 8);
 	uint64_t tmp_one = 1;
-	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset)));
+	/*BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset)));
 	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 1)));
 	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 2)));
 	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 3)));
@@ -1060,7 +1060,7 @@ void pack_hs_loss_data(int slave_no, uint64_t data)
 	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 5)));
 	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 6)));
 	BufferIn.Cust.hs_record = BufferIn.Cust.hs_record & (~(tmp_one << (bit_offset + 7)));
-	BufferIn.Cust.hs_record = (BufferIn.Cust.hs_record | (data << bit_offset));
+	BufferIn.Cust.hs_record = (BufferIn.Cust.hs_record | (data << bit_offset));*/
 }
 
 void pack_hs_data()
@@ -1090,11 +1090,11 @@ void pack_ethercat_data()
 	BufferIn.Cust.motor_5 = joint_r_data[4];
 	BufferIn.Cust.motor_6 = joint_r_data[5];
 	
-	BufferIn.Cust.can1_error_log = can1_error_counter;
+	/*BufferIn.Cust.can1_error_log = can1_error_counter;
 	BufferIn.Cust.can2_error_log = can2_error_counter;
 	
 	BufferIn.Cust.rec_error_can1 = (uint16_t)can1_last_error_code;
-	BufferIn.Cust.rec_error_can2 = (uint16_t)can2_last_error_code;
+	BufferIn.Cust.rec_error_can2 = (uint16_t)can2_last_error_code;*/
 	
 	// pack hs data
 	pack_hs_data();
@@ -1116,7 +1116,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		// 1. control
 		if (tmp_hs_ > hs_ || tmp_hs_ == 1)
 		{
-			control_word = BufferOut.Cust.control_word;
+			//control_word = BufferOut.Cust.control_word;
+			
+			control_word = (uint16_t)BufferOut.Cust.test;
 			
 			if (tmp_hs_ == 1 || tmp_hs_ == 2)
 			{

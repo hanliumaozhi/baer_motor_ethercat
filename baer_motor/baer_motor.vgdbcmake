@@ -19,9 +19,9 @@
     <ToolchainID>
       <ID>com.visualgdb.arm-eabi</ID>
       <Version>
-        <GCC>12.3.1</GCC>
-        <GDB>13.2</GDB>
-        <Revision>1</Revision>
+        <GCC>14.2.1</GCC>
+        <GDB>15.2</GDB>
+        <Revision>2</Revision>
       </Version>
     </ToolchainID>
     <RelativeSourceDirectory />
@@ -66,7 +66,9 @@
       <ConfigurationNameCase>Upper</ConfigurationNameCase>
       <DefaultHeaderDiscoveryMode>None</DefaultHeaderDiscoveryMode>
       <EnableFastUpToDateCheck>true</EnableFastUpToDateCheck>
+      <DetectMissingSolutionConfigurations>false</DetectMissingSolutionConfigurations>
     </ProjectModeSettings>
+    <LoadCMakePresets>false</LoadCMakePresets>
   </Build>
   <CustomBuild>
     <PreSyncActions />
@@ -132,10 +134,12 @@
       <EnableAsyncExecutionMode>false</EnableAsyncExecutionMode>
       <AsyncModeSupportsBreakpoints>true</AsyncModeSupportsBreakpoints>
       <TemporaryBreakConsolidationTimeout>0</TemporaryBreakConsolidationTimeout>
+      <BacktraceFrameLimit>0</BacktraceFrameLimit>
       <EnableNonStopMode>false</EnableNonStopMode>
       <MaxBreakpointLimit>0</MaxBreakpointLimit>
       <EnableVerboseMode>true</EnableVerboseMode>
       <EnablePrettyPrinters>false</EnablePrettyPrinters>
+      <EnableAbsolutePathReporting>true</EnableAbsolutePathReporting>
     </AdditionalGDBSettings>
     <DebugMethod>
       <ID>com.sysprogs.arm.openocd</ID>

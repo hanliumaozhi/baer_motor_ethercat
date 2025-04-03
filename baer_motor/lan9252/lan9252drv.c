@@ -180,15 +180,31 @@ void SPIReadProcRamFifo(spiCTX* ctx) {
 	Buffer[1] = 0x00; // address of the read FIFO
 	Buffer[2] = 0x00; // FIFO MsByte first
 	HAL_GPIO_WritePin(CSS_GPIO_Port, CSS_Pin, GPIO_PIN_RESET);
-
 	// write command
 	if (HAL_SPI_Transmit(ctx->spi, Buffer, 3, SPI_TIMEOUT_MAX) != HAL_OK) {
 		// HAL_UART_Transmit(&huart3, (uint8_t *)"ERROR# HAL_SPI_Transmit\r\n", 25, HAL_MAX_DELAY);
 	}
-
 	if (HAL_SPI_Receive(ctx->spi, ctx->bOut->Byte, FST_BYTE_NUM_ROUND_OUT, SPI_TIMEOUT_MAX) != HAL_OK) {
 		// HAL_UART_Transmit(&huart3, (uint8_t *)"ERROR# HAL_SPI_Receive\r\n", 24, HAL_MAX_DELAY);
 	}
-
 	HAL_GPIO_WritePin(CSS_GPIO_Port, CSS_Pin, GPIO_PIN_SET);
+	
+	do {
+		TempLong.Long = SPIReadRegisterDirect(ctx, ECAT_PRAM_RD_CMD, 2);
+	} while (TempLong.Byte[1] != (64 / 4));
+	
+	Buffer[0] = COMM_SPI_READ;
+	Buffer[1] = 0x00; // address of the read FIFO
+	Buffer[2] = 0x00; // FIFO MsByte first
+	HAL_GPIO_WritePin(CSS_GPIO_Port, CSS_Pin, GPIO_PIN_RESET);
+	// write command
+	if (HAL_SPI_Transmit(ctx->spi, Buffer, 3, SPI_TIMEOUT_MAX) != HAL_OK) {
+		// HAL_UART_Transmit(&huart3, (uint8_t *)"ERROR# HAL_SPI_Transmit\r\n", 25, HAL_MAX_DELAY);
+	}
+	if (HAL_SPI_Receive(ctx->spi, &ctx->bOut->Byte[64], 64, SPI_TIMEOUT_MAX) != HAL_OK) {
+		// HAL_UART_Transmit(&huart3, (uint8_t *)"ERROR# HAL_SPI_Receive\r\n", 24, HAL_MAX_DELAY);
+	}
+	HAL_GPIO_WritePin(CSS_GPIO_Port, CSS_Pin, GPIO_PIN_SET);
+	
+	// second 
 }

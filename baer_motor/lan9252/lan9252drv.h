@@ -6,10 +6,10 @@
 #include <string.h>
 #include "stm32h7xx_hal.h"
 
-#define CUST_BYTE_NUM_OUT	64
-#define CUST_BYTE_NUM_IN	92
-#define TOT_BYTE_NUM_ROUND_OUT	64
-#define TOT_BYTE_NUM_ROUND_IN	92
+#define CUST_BYTE_NUM_OUT	128
+#define CUST_BYTE_NUM_IN	128
+#define TOT_BYTE_NUM_ROUND_OUT	128
+#define TOT_BYTE_NUM_ROUND_IN	128
 
                                                         
 #define SEC_BYTE_NUM_IN  (CUST_BYTE_NUM_IN - 64)   // number of bytes of the second transfer
@@ -86,6 +86,7 @@ typedef union {
 } ULONG;
 
 
+
 typedef union												//---- output buffer ----
 {
 	uint8_t  Byte[TOT_BYTE_NUM_ROUND_OUT];
@@ -98,9 +99,15 @@ typedef union												//---- output buffer ----
 		uint64_t    motor_4;
 		uint64_t    motor_5;
 		uint64_t    motor_6;
-		uint32_t    test_word;
-		uint16_t    control_word;
-		uint16_t    motor_enable;
+		uint64_t    motor_7;
+		uint64_t    motor_8;
+		uint64_t    motor_9;
+		uint64_t    motor_10;
+		uint64_t    motor_11;
+		uint64_t    motor_12;
+		uint64_t    motor_13;
+		uint64_t    motor_14;
+		uint64_t    test;
 	}Cust;
 } PROCBUFFER_OUT;
 
@@ -117,15 +124,15 @@ typedef union												//---- input buffer ----
 		uint64_t    motor_4;
 		uint64_t    motor_5;
 		uint64_t    motor_6;
-		uint64_t    test_word_byte_8;
-		uint64_t    hs_record;
-		uint32_t    can1_error_log;
-		uint32_t    can2_error_log;
-		uint32_t    test_word_byte_4;
-		uint16_t    rec_error_can2;
-		uint16_t    rec_error_can1;
-		uint16_t    motor_status;
-		uint16_t    fsm;
+		uint64_t    motor_7;
+		uint64_t    motor_8;
+		uint64_t    motor_9;
+		uint64_t    motor_10;
+		uint64_t    motor_11;
+		uint64_t    motor_12;
+		uint64_t    motor_13;
+		uint64_t    motor_14;
+		uint64_t    test;
 	}Cust;
 } PROCBUFFER_IN;
 
