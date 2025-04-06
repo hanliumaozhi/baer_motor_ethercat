@@ -58,16 +58,24 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
-// joint 1-3 in can1
+// joint 1-7 in can1
 FDCAN_TxHeaderTypeDef joint_1;
 FDCAN_TxHeaderTypeDef joint_2;
 FDCAN_TxHeaderTypeDef joint_3;
-// joint 4-6 in can2
 FDCAN_TxHeaderTypeDef joint_4;
 FDCAN_TxHeaderTypeDef joint_5;
 FDCAN_TxHeaderTypeDef joint_6;
+FDCAN_TxHeaderTypeDef joint_7;
 
-FDCAN_TxHeaderTypeDef joint_encoder;
+// joint 8-14 in can2
+FDCAN_TxHeaderTypeDef joint_8;
+FDCAN_TxHeaderTypeDef joint_9;
+FDCAN_TxHeaderTypeDef joint_10;
+FDCAN_TxHeaderTypeDef joint_11;
+FDCAN_TxHeaderTypeDef joint_12;
+FDCAN_TxHeaderTypeDef joint_13;
+FDCAN_TxHeaderTypeDef joint_14;
+
 
 uint8_t tx_msg_buffer[8];
 
@@ -77,9 +85,16 @@ uint8_t joint_3_data[8];
 uint8_t joint_4_data[8];
 uint8_t joint_5_data[8];
 uint8_t joint_6_data[8];
-uint8_t joint_encoder_data[8];
+uint8_t joint_7_data[8];
+uint8_t joint_8_data[8];
+uint8_t joint_9_data[8];
+uint8_t joint_10_data[8];
+uint8_t joint_11_data[8];
+uint8_t joint_12_data[8];
+uint8_t joint_13_data[8];
+uint8_t joint_14_data[8];
 
-uint64_t joint_r_data[6];
+uint64_t joint_r_data[14];
 
 FDCAN_RxHeaderTypeDef rx_header;
 uint8_t rx_data[8];
@@ -160,7 +175,7 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 	if (pRxHeader->DataLength == FDCAN_DLC_BYTES_8)
 	{
 		int id = data[0] & 0xF;
-		if (id > 0 && id < 7)
+		if (id > 0 && id < 15)
 		{
 			for (size_t i = 0; i < 8; i++)
 			{
@@ -174,7 +189,7 @@ void unpack_reply(FDCAN_RxHeaderTypeDef *pRxHeader, uint8_t *data)
 	else if (pRxHeader->DataLength == FDCAN_DLC_BYTES_6)
 	{
 		int id = data[0] & 0xF;
-		if (id > 0 && id < 7)
+		if (id > 0 && id < 15)
 		{
 			for (size_t i = 0; i < 6; i++)
 			{
@@ -347,15 +362,86 @@ int main(void)
 	joint_6.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_6.MessageMarker = 0;
 	
-	joint_encoder.Identifier = 0x7FF;
-	joint_encoder.IdType = FDCAN_STANDARD_ID;
-	joint_encoder.TxFrameType = FDCAN_DATA_FRAME;
-	joint_encoder.DataLength = FDCAN_DLC_BYTES_8;
-	joint_encoder.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-	joint_encoder.BitRateSwitch = FDCAN_BRS_OFF;
-	joint_encoder.FDFormat = FDCAN_CLASSIC_CAN;
-	joint_encoder.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
-	joint_encoder.MessageMarker = 0;
+	joint_7.Identifier = 0x7;
+	joint_7.IdType = FDCAN_STANDARD_ID;
+	joint_7.TxFrameType = FDCAN_DATA_FRAME;
+	joint_7.DataLength = FDCAN_DLC_BYTES_8;
+	joint_7.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_7.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_7.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_7.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_7.MessageMarker = 0;
+	
+	joint_8.Identifier = 0x8;
+	joint_8.IdType = FDCAN_STANDARD_ID;
+	joint_8.TxFrameType = FDCAN_DATA_FRAME;
+	joint_8.DataLength = FDCAN_DLC_BYTES_8;
+	joint_8.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_8.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_8.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_8.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_8.MessageMarker = 0;
+	
+	joint_9.Identifier = 0x9;
+	joint_9.IdType = FDCAN_STANDARD_ID;
+	joint_9.TxFrameType = FDCAN_DATA_FRAME;
+	joint_9.DataLength = FDCAN_DLC_BYTES_8;
+	joint_9.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_9.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_9.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_9.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_9.MessageMarker = 0;
+	
+	joint_10.Identifier = 0x10;
+	joint_10.IdType = FDCAN_STANDARD_ID;
+	joint_10.TxFrameType = FDCAN_DATA_FRAME;
+	joint_10.DataLength = FDCAN_DLC_BYTES_8;
+	joint_10.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_10.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_10.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_10.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_10.MessageMarker = 0;
+	
+	joint_11.Identifier = 0x11;
+	joint_11.IdType = FDCAN_STANDARD_ID;
+	joint_11.TxFrameType = FDCAN_DATA_FRAME;
+	joint_11.DataLength = FDCAN_DLC_BYTES_8;
+	joint_11.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_11.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_11.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_11.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_11.MessageMarker = 0;
+	
+	joint_12.Identifier = 0x12;
+	joint_12.IdType = FDCAN_STANDARD_ID;
+	joint_12.TxFrameType = FDCAN_DATA_FRAME;
+	joint_12.DataLength = FDCAN_DLC_BYTES_8;
+	joint_12.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_12.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_12.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_12.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_12.MessageMarker = 0;
+	
+	joint_13.Identifier = 0x13;
+	joint_13.IdType = FDCAN_STANDARD_ID;
+	joint_13.TxFrameType = FDCAN_DATA_FRAME;
+	joint_13.DataLength = FDCAN_DLC_BYTES_8;
+	joint_13.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_13.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_13.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_13.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_13.MessageMarker = 0;
+	
+	joint_14.Identifier = 0x14;
+	joint_14.IdType = FDCAN_STANDARD_ID;
+	joint_14.TxFrameType = FDCAN_DATA_FRAME;
+	joint_14.DataLength = FDCAN_DLC_BYTES_8;
+	joint_14.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	joint_14.BitRateSwitch = FDCAN_BRS_OFF;
+	joint_14.FDFormat = FDCAN_CLASSIC_CAN;
+	joint_14.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	joint_14.MessageMarker = 0;
+	
 	
 	HAL_FDCAN_Start(&hfdcan1);
 	HAL_FDCAN_Start(&hfdcan2);
@@ -493,7 +579,7 @@ static void MX_FDCAN1_Init(void)
   hfdcan1.Init.MessageRAMOffset = 0;
   hfdcan1.Init.StdFiltersNbr = 0;
   hfdcan1.Init.ExtFiltersNbr = 0;
-  hfdcan1.Init.RxFifo0ElmtsNbr = 12;
+  hfdcan1.Init.RxFifo0ElmtsNbr = 14;
   hfdcan1.Init.RxFifo0ElmtSize = FDCAN_DATA_BYTES_8;
   hfdcan1.Init.RxFifo1ElmtsNbr = 0;
   hfdcan1.Init.RxFifo1ElmtSize = FDCAN_DATA_BYTES_8;
@@ -501,7 +587,7 @@ static void MX_FDCAN1_Init(void)
   hfdcan1.Init.RxBufferSize = FDCAN_DATA_BYTES_8;
   hfdcan1.Init.TxEventsNbr = 0;
   hfdcan1.Init.TxBuffersNbr = 0;
-  hfdcan1.Init.TxFifoQueueElmtsNbr = 12;
+  hfdcan1.Init.TxFifoQueueElmtsNbr = 14;
   hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
   hfdcan1.Init.TxElmtSize = FDCAN_DATA_BYTES_8;
   if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
@@ -546,7 +632,7 @@ static void MX_FDCAN2_Init(void)
   hfdcan2.Init.MessageRAMOffset = 1024;
   hfdcan2.Init.StdFiltersNbr = 0;
   hfdcan2.Init.ExtFiltersNbr = 0;
-  hfdcan2.Init.RxFifo0ElmtsNbr = 12;
+  hfdcan2.Init.RxFifo0ElmtsNbr = 14;
   hfdcan2.Init.RxFifo0ElmtSize = FDCAN_DATA_BYTES_8;
   hfdcan2.Init.RxFifo1ElmtsNbr = 0;
   hfdcan2.Init.RxFifo1ElmtSize = FDCAN_DATA_BYTES_8;
@@ -554,7 +640,7 @@ static void MX_FDCAN2_Init(void)
   hfdcan2.Init.RxBufferSize = FDCAN_DATA_BYTES_8;
   hfdcan2.Init.TxEventsNbr = 0;
   hfdcan2.Init.TxBuffersNbr = 0;
-  hfdcan2.Init.TxFifoQueueElmtsNbr = 12;
+  hfdcan2.Init.TxFifoQueueElmtsNbr = 14;
   hfdcan2.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
   hfdcan2.Init.TxElmtSize = FDCAN_DATA_BYTES_8;
   if (HAL_FDCAN_Init(&hfdcan2) != HAL_OK)
@@ -833,7 +919,7 @@ uint32_t can2_error_counter = 0;
 uint32_t can1_last_error_code = 0;
 uint32_t can2_last_error_code = 0;
 
-uint16_t control_word;
+uint64_t control_word;
 
 int is_enable = 0;
 int motor_init_state = 0;
@@ -854,24 +940,64 @@ void send_to_all_slave()
 	{
 		can1_error_counter += 1;
 	}
-		
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_4, joint_4_data) != HAL_OK)
+	
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_4, joint_4_data) != HAL_OK)
 	{
-		can2_error_counter += 1;
+		can1_error_counter += 1;
+	}
+	
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_5, joint_5_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
+	}
+	
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_6, joint_6_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
+	}
+	
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_7, joint_7_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
+	}
+	
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_8, joint_8_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
 	}
 		
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_5, joint_5_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_9, joint_9_data) != HAL_OK)
 	{
-		can2_error_counter += 1;
+		can1_error_counter += 1;
 	}
 		
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_6, joint_6_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_10, joint_10_data) != HAL_OK)
 	{
-		can2_error_counter += 1;
+		can1_error_counter += 1;
+	}
+	
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_11, joint_11_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
+	}
+	
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_12, joint_12_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
+	}
+	
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_13, joint_13_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
+	}
+	
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_14, joint_14_data) != HAL_OK)
+	{
+		can1_error_counter += 1;
 	}
 }
 
-void send_to_joint(int joint_no)
+/*void send_to_joint(int joint_no)
 {
 	if (joint_no == 1 || joint_no == 2 || joint_no == 3)
 	{
@@ -887,7 +1013,7 @@ void send_to_joint(int joint_no)
 			can1_error_counter += 1;
 		}
 	}
-}
+}*/
 
 void pack_motor_data()
 {
@@ -925,6 +1051,54 @@ void pack_motor_data()
 	for (size_t i = 0; i < 8; i++)
 	{
 		joint_6_data[i] = byte_8.buffer[i];
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_7;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_7_data[i] = byte_8.buffer[i]; 
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_8;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_8_data[i] = byte_8.buffer[i]; 
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_9;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_9_data[i] = byte_8.buffer[i]; 
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_10;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_10_data[i] = byte_8.buffer[i]; 
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_11;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_11_data[i] = byte_8.buffer[i]; 
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_12;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_12_data[i] = byte_8.buffer[i]; 
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_13;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_13_data[i] = byte_8.buffer[i]; 
+	}
+	
+	byte_8.udata = BufferOut.Cust.motor_14;
+	for (size_t i = 0; i < 8; i++)
+	{
+		joint_14_data[i] = byte_8.buffer[i]; 
 	}
 }
 
@@ -991,7 +1165,7 @@ void control()
 	}*/
 	
 	
-	int is_init = 0;
+	/*int is_init = 0;
 	
 	if (control_word == 1 && is_enable == 0)
 	{
@@ -1002,6 +1176,15 @@ void control()
 		motor_enable(&joint_4, joint_4_data);
 		motor_enable(&joint_5, joint_5_data);
 		motor_enable(&joint_6, joint_6_data);
+		motor_enable(&joint_7, joint_7_data);
+		
+		motor_enable(&joint_8, joint_8_data);
+		motor_enable(&joint_9, joint_9_data);
+		motor_enable(&joint_10, joint_10_data);
+		motor_enable(&joint_11, joint_11_data);
+		motor_enable(&joint_12, joint_12_data);
+		motor_enable(&joint_13, joint_13_data);
+		motor_enable(&joint_14, joint_14_data);
 		
 		send_to_all_slave();
 		
@@ -1012,7 +1195,7 @@ void control()
 	if (is_init)
 	{
 		return;
-	}
+	}*/
 	
 	/*if (motor_init_state == 1)
 	{
@@ -1089,6 +1272,14 @@ void pack_ethercat_data()
 	BufferIn.Cust.motor_4 = joint_r_data[3];
 	BufferIn.Cust.motor_5 = joint_r_data[4];
 	BufferIn.Cust.motor_6 = joint_r_data[5];
+	BufferIn.Cust.motor_7 = joint_r_data[6];
+	BufferIn.Cust.motor_8 = joint_r_data[7];
+	BufferIn.Cust.motor_9 = joint_r_data[8];
+	BufferIn.Cust.motor_10 = joint_r_data[9];
+	BufferIn.Cust.motor_11 = joint_r_data[10];
+	BufferIn.Cust.motor_12 = joint_r_data[11];
+	BufferIn.Cust.motor_13 = joint_r_data[12];
+	BufferIn.Cust.motor_14 = joint_r_data[13];
 	
 	/*BufferIn.Cust.can1_error_log = can1_error_counter;
 	BufferIn.Cust.can2_error_log = can2_error_counter;
@@ -1118,7 +1309,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			//control_word = BufferOut.Cust.control_word;
 			
-			control_word = (uint16_t)BufferOut.Cust.test;
+			control_word = BufferOut.Cust.test;
 			
 			if (tmp_hs_ == 1 || tmp_hs_ == 2)
 			{

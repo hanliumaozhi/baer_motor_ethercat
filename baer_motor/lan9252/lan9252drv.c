@@ -158,7 +158,7 @@ void SPIWriteProcRamFifo(spiCTX* ctx) {
 	HAL_GPIO_WritePin(CSS_GPIO_Port, CSS_Pin, GPIO_PIN_SET);
 }
 
-#define FST_BYTE_NUM_ROUND_OUT TOT_BYTE_NUM_ROUND_OUT
+#define FST_BYTE_NUM_ROUND_OUT 64
 /*
  * To master
  */
@@ -206,5 +206,5 @@ void SPIReadProcRamFifo(spiCTX* ctx) {
 	}
 	HAL_GPIO_WritePin(CSS_GPIO_Port, CSS_Pin, GPIO_PIN_SET);
 	
-	// second 
+
 }
