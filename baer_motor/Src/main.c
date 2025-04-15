@@ -926,72 +926,72 @@ int motor_init_state = 0;
 
 void send_to_all_slave()
 {
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_1, joint_1_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_1, joint_1_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 		
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_2, joint_2_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_2, joint_2_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 		
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_3, joint_3_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_3, joint_3_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 	
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_4, joint_4_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_4, joint_4_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 	
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_5, joint_5_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_5, joint_5_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 	
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_6, joint_6_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_6, joint_6_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 	
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_7, joint_7_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_7, joint_7_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 	
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_8, joint_8_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_8, joint_8_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 		
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_9, joint_9_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_9, joint_9_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 		
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_10, joint_10_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_10, joint_10_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 	
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_11, joint_11_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_11, joint_11_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 	
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_12, joint_12_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_12, joint_12_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 	
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_13, joint_13_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_13, joint_13_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
 	
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2, &joint_14, joint_14_data) != HAL_OK)
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &joint_14, joint_14_data) != HAL_OK)
 	{
 		can1_error_counter += 1;
 	}
