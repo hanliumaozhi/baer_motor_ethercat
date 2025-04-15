@@ -302,7 +302,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	
 	//1. init tx msg
-	joint_1.Identifier = 0x1;
+	joint_1.Identifier = 0x101;
 	joint_1.IdType = FDCAN_STANDARD_ID;
 	joint_1.TxFrameType = FDCAN_DATA_FRAME;
 	joint_1.DataLength = FDCAN_DLC_BYTES_8;
@@ -312,7 +312,7 @@ int main(void)
 	joint_1.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_1.MessageMarker = 0;
 	
-	joint_2.Identifier = 0x2;
+	joint_2.Identifier = 0x102;
 	joint_2.IdType = FDCAN_STANDARD_ID;
 	joint_2.TxFrameType = FDCAN_DATA_FRAME;
 	joint_2.DataLength = FDCAN_DLC_BYTES_8;
@@ -322,7 +322,7 @@ int main(void)
 	joint_2.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_2.MessageMarker = 0;
 	
-	joint_3.Identifier = 0x3;
+	joint_3.Identifier = 0x103;
 	joint_3.IdType = FDCAN_STANDARD_ID;
 	joint_3.TxFrameType = FDCAN_DATA_FRAME;
 	joint_3.DataLength = FDCAN_DLC_BYTES_8;
@@ -332,7 +332,7 @@ int main(void)
 	joint_3.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_3.MessageMarker = 0;
 	
-	joint_4.Identifier = 0x4;
+	joint_4.Identifier = 0x104;
 	joint_4.IdType = FDCAN_STANDARD_ID;
 	joint_4.TxFrameType = FDCAN_DATA_FRAME;
 	joint_4.DataLength = FDCAN_DLC_BYTES_8;
@@ -342,7 +342,7 @@ int main(void)
 	joint_4.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_4.MessageMarker = 0;
 	
-	joint_5.Identifier = 0x5;
+	joint_5.Identifier = 0x105;
 	joint_5.IdType = FDCAN_STANDARD_ID;
 	joint_5.TxFrameType = FDCAN_DATA_FRAME;
 	joint_5.DataLength = FDCAN_DLC_BYTES_8;
@@ -352,7 +352,7 @@ int main(void)
 	joint_5.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_5.MessageMarker = 0;
 	
-	joint_6.Identifier = 0x6;
+	joint_6.Identifier = 0x106;
 	joint_6.IdType = FDCAN_STANDARD_ID;
 	joint_6.TxFrameType = FDCAN_DATA_FRAME;
 	joint_6.DataLength = FDCAN_DLC_BYTES_8;
@@ -362,7 +362,7 @@ int main(void)
 	joint_6.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_6.MessageMarker = 0;
 	
-	joint_7.Identifier = 0x7;
+	joint_7.Identifier = 0x107;
 	joint_7.IdType = FDCAN_STANDARD_ID;
 	joint_7.TxFrameType = FDCAN_DATA_FRAME;
 	joint_7.DataLength = FDCAN_DLC_BYTES_8;
@@ -372,7 +372,7 @@ int main(void)
 	joint_7.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_7.MessageMarker = 0;
 	
-	joint_8.Identifier = 0x8;
+	joint_8.Identifier = 0x108;
 	joint_8.IdType = FDCAN_STANDARD_ID;
 	joint_8.TxFrameType = FDCAN_DATA_FRAME;
 	joint_8.DataLength = FDCAN_DLC_BYTES_8;
@@ -382,7 +382,7 @@ int main(void)
 	joint_8.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_8.MessageMarker = 0;
 	
-	joint_9.Identifier = 0x9;
+	joint_9.Identifier = 0x109;
 	joint_9.IdType = FDCAN_STANDARD_ID;
 	joint_9.TxFrameType = FDCAN_DATA_FRAME;
 	joint_9.DataLength = FDCAN_DLC_BYTES_8;
@@ -392,7 +392,7 @@ int main(void)
 	joint_9.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_9.MessageMarker = 0;
 	
-	joint_10.Identifier = 0x10;
+	joint_10.Identifier = 0x10a;
 	joint_10.IdType = FDCAN_STANDARD_ID;
 	joint_10.TxFrameType = FDCAN_DATA_FRAME;
 	joint_10.DataLength = FDCAN_DLC_BYTES_8;
@@ -402,7 +402,7 @@ int main(void)
 	joint_10.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_10.MessageMarker = 0;
 	
-	joint_11.Identifier = 0x11;
+	joint_11.Identifier = 0x10b;
 	joint_11.IdType = FDCAN_STANDARD_ID;
 	joint_11.TxFrameType = FDCAN_DATA_FRAME;
 	joint_11.DataLength = FDCAN_DLC_BYTES_8;
@@ -412,7 +412,7 @@ int main(void)
 	joint_11.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_11.MessageMarker = 0;
 	
-	joint_12.Identifier = 0x12;
+	joint_12.Identifier = 0x10c;
 	joint_12.IdType = FDCAN_STANDARD_ID;
 	joint_12.TxFrameType = FDCAN_DATA_FRAME;
 	joint_12.DataLength = FDCAN_DLC_BYTES_8;
@@ -422,7 +422,7 @@ int main(void)
 	joint_12.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_12.MessageMarker = 0;
 	
-	joint_13.Identifier = 0x13;
+	joint_13.Identifier = 0x10d;
 	joint_13.IdType = FDCAN_STANDARD_ID;
 	joint_13.TxFrameType = FDCAN_DATA_FRAME;
 	joint_13.DataLength = FDCAN_DLC_BYTES_8;
@@ -432,7 +432,7 @@ int main(void)
 	joint_13.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
 	joint_13.MessageMarker = 0;
 	
-	joint_14.Identifier = 0x14;
+	joint_14.Identifier = 0x10e;
 	joint_14.IdType = FDCAN_STANDARD_ID;
 	joint_14.TxFrameType = FDCAN_DATA_FRAME;
 	joint_14.DataLength = FDCAN_DLC_BYTES_8;
